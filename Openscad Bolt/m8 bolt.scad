@@ -1,15 +1,19 @@
-//Hi I am Gibbedy :)
-//This is my attempt to model an M8 bolt.
-//In an effort to learn openscad and github I would like anyone 
-//to simplify my code. Or just make changes for the sake of it so I can see
-//how this github thing works.
+//This is my attempt to model a bolt.
 
-module Bolt_50_mm_M8(diameter,length,head_size,head_depth)
+
+//Create a bolt by specifying shaft diameter, shaft length, distance accross head flats, and depth of head
+module Bolt(diameter,length,head_size,head_depth)
 	{
-echo("diameter: ",diameter," length: ",length," head_size: ",head_size," head_depth: ",head_depth);
+	echo("********************************************");
+	echo("Creating bolt with following dimensions");
+	echo("Diameter: ",diameter);
+	echo("Shaft length: ",length);
+	echo("Head size (between flats): ",head_size);
+	echo("Head depth: ",head_depth);
+	echo("********************************************");
 
-//Calculate dimentions of hexagon for head of bolt based on distance
-//between flats
+	//Calculate dimentions of hexagon for head of bolt based on distance
+	//between flats
 
 	//google found..
 	//side_length= 2a tan (180/n)
@@ -18,15 +22,17 @@ echo("diameter: ",diameter," length: ",length," head_size: ",head_size," head_de
 	//tan  is the tangent function calculated in degrees
    side_length=2*head_size/2* tan(180/6);
 
-   echo("side_length",side_length);
-   echo(-side_length/2,-head_size/2,side_length,head_size,head_depth);
+	//create hexagonal head from 3 cubes rotated 120 degrees
 	translate([-side_length/2,-head_size/2,0]) cube([side_length,head_size,head_depth]);
 	rotate([0,0,120]) translate([-side_length/2,-head_size/2,0])cube([side_length,head_size,head_depth]);
 	rotate([0,0,240]) translate([-side_length/2,-head_size/2,0])cube([side_length,head_size,head_depth]);
-
+	
+	//Add shaft offset by depth of head
 	shaft_radius=diameter/2;
-	translate(0,0,head_depth) cylinder(length,shaft_radius,shaft_radius);
+	translate([0,0,head_depth]) cylinder(length,shaft_radius,shaft_radius);
 	}
+
+//Parameters ***********************************
 //diameter of shaft
 diameter=8;
 
@@ -39,6 +45,11 @@ head_size=13;
 //depth of head
 head_depth=4.8;
 
-Bolt_50_mm_M8(diameter,length,head_size,head_depth);
+//**********************************************
+
+Bolt(diameter,length,head_size,head_depth);
+
+
+
 
 
