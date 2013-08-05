@@ -1,53 +1,58 @@
-//This is my attempt to model a bolt.
+//This is my attempt to model a bearing.
 
 
-//Create a bolt by specifying shaft diameter, shaft length, distance accross head flats, and depth of head
-module Bolt(diameter,length,head_size,head_depth)
+//Create a bearing by specifying internal diameter, external diameter and width.
+module Bearing(int_Diameter,ext_Diameter,width)
 	{
 	echo("********************************************");
-	echo("Creating bolt with following dimensions");
-	echo("Diameter: ",diameter);
-	echo("Shaft length: ",length);
-	echo("Head size (between flats): ",head_size);
-	echo("Head depth: ",head_depth);
+	echo("Creating bearing with following dimensions");
+	echo("Internal Diameter: ",int_Diameter);
+	echo("External Diameter: ",ext_Diameter);
+	echo("Width: ",width);
 	echo("********************************************");
 
-	//Calculate dimentions of hexagon for head of bolt based on distance
-	//between flats
 
-	//google found..
-	//side_length= 2a tan (180/n)
-	//a  is the length of the apothem (inradius)
-	//n  is the number of sides
-	//tan  is the tangent function calculated in degrees
-   side_length=2*head_size/2* tan(180/6);
 
-	//create hexagonal head from 3 cubes rotated 120 degrees
-	translate([-side_length/2,-head_size/2,0]) cube([side_length,head_size,head_depth]);
-	rotate([0,0,120]) translate([-side_length/2,-head_size/2,0])cube([side_length,head_size,head_depth]);
-	rotate([0,0,240]) translate([-side_length/2,-head_size/2,0])cube([side_length,head_size,head_depth]);
+	//create external cylinder minus internal cylinder
+	difference()
+		{
+		bearingExternalGeom(ext_Diameter,width);
+		cylinder(width,int_Diameter/2,int_Diameter/2);
+		}
+	
+
+
+//	translate([-side_length/2,-head_size/2,0]) cube([side_length,head_size,head_depth]);
+	//rotate([0,0,120]) translate([-side_length/2,-head_size/2,0])cube([side_length,head_size,head_depth]);
+	//rotate([0,0,240]) translate([-side_length/2,-head_size/2,0])cube([side_length,head_size,head_depth]);
 	
 	//Add shaft offset by depth of head
-	shaft_radius=diameter/2;
-	translate([0,0,head_depth]) cylinder(length,shaft_radius,shaft_radius);
+	//shaft_radius=diameter/2;
+//	translate([0,0,head_depth]) cylinder(length,shaft_radius,shaft_radius);
+	}
+
+//use for getting external geometry only (for binary commands)
+module bearingExternalGeom(ext_Diameter,width)
+	{
+	cylinder(width,ext_Diameter/2,ext_Diameter/2);
+	
 	}
 
 //Parameters ***********************************
-//diameter of shaft
-diameter=8;
+//Internal diameter
+int_Diameter=4;
 
-//length of shaft
-length=50;
+//External Diameter
+ext_Diameter=13;
 
-//distance between flats of head
-head_size=13;
+//width
+width=5;
 
-//depth of head
-head_depth=4.8;
-
+//608=8,22,7
+//624=4,13,5
 //**********************************************
 
-Bolt(diameter,length,head_size,head_depth);
+Bearing(int_Diameter,ext_Diameter,width);
 
 
 
