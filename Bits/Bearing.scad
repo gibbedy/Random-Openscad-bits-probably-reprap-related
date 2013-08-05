@@ -34,6 +34,11 @@ module Bearing(int_Diameter,ext_Diameter,width)
 //use for getting external geometry only (for binary commands)
 module bearingExternalGeom(ext_Diameter,width)
 	{
+	echo("********************************************");
+	echo("Creating bearing (external geometry) with following dimensions");
+	echo("External Diameter: ",ext_Diameter);
+	echo("Width: ",width);
+	echo("********************************************");
 	cylinder(width,ext_Diameter/2,ext_Diameter/2);
 	
 	}

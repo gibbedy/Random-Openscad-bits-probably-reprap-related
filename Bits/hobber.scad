@@ -1,8 +1,9 @@
-//Hobbed bolt hobber.
+//Hobbed bolt hobber thingy.
 //Needs to hold the bolt and m4 tap securely in position.
 
 use <Bolt.scad>;
 use <Bearing.scad>;
+use <Tap.scad>;
 
 //main frame of tool
 module frame(length,width,height)
@@ -31,8 +32,9 @@ module frame(length,width,height)
 		//tap shaft
 		translate([0,width/2,4])rotate([90,0,0])cylinder(width,2,2);
 		}
-	
+		
 	}
+
 module tapBearing()
 	{
 	Bearing(4,13,5);
@@ -54,6 +56,16 @@ module tapBearing()
 	bearingExternalGeom(extDiameter,width);
 	}
 
+module M4Tap()
+	{
+	diameter=4;
+	sqrSize=3.1;
+	sqrLength=8;
+	shankLength=23;
+	threadLength=24;
+	Tap(diameter,sqrSize,sqrLength,shankLength,threadLength);
+	}
+
 //Parameters ***********************************
 //frame length
 length=35;
@@ -66,7 +78,7 @@ height=45;
 
 //**********************************************
 frame(length,width,height);
-
+translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
 
 
 
