@@ -81,6 +81,12 @@ module M8Bolt()
 	Bolt(diameter,length,head_size,head_depth);
 	}
 
+module 4Bolts()
+	{
+	cylinder(50,1.5,1.5);
+	}
+
+
 //topBit minus stuff
 module topBit()
 	{
@@ -135,6 +141,9 @@ module topBitExternal()
 	
 		cube([21,length,10.5],true);
 
+	//hinge
+	translate([0,length/2-3,11.75])rotate([0,90,0])cylinder(25,3,3,true);
+
 
 	
 
@@ -145,6 +154,7 @@ module topBitExternal()
 
 //Render this
 bottomBit(length,width,height);
-translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
-translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
-topBit();
+//translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
+//translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
+//topBit();
+//translate([-8,-8,-height])4Bolts();
