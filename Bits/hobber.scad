@@ -1,5 +1,6 @@
 //Hobbed bolt hobber thingy.
 //Needs to hold the bolt and m4 tap securely in position.
+//My openscad is pretty bad :(
 
 use <Bolt.scad>;
 use <Bearing.scad>;
@@ -15,6 +16,8 @@ width=35;
 //frame height
 height=29.5;
 
+//with of support structure for hinge overhang
+supportWidth=0.7;
 //**********************************************
 
 
@@ -24,7 +27,7 @@ module bottomBit(length,width,height)
 	difference()
 		{
 		//cube for frame centered
-		cube([length,width,height],true);
+		cube([length,width,height+3],true);
 
 		//lhs bolt bearing
 		translate([-width/2,0,0])rotate([0,90,0])boltBearing();
@@ -37,8 +40,41 @@ module bottomBit(length,width,height)
 
 		//remove space for top bit
 		topBitExternal();
-		}
+			
+
+	
+		//remove square at top.
+		translate([0,0,16])cube([21,length,3],true);
+		translate([0,length/2-3,11.75])
+			{
+			rotate([180,0,0])
+				{
 		
+				//create semi circle (first bit of hinge cutout
+				difference()
+					{
+					translate([0,0,0])rotate([0,90,0])cylinder(25,3,3,true);
+					translate([0,-1.5,0])cube([25,3,6],true);			
+					}
+				//vary hinge length here
+
+				translate([0,-1.5+(supportWidth/2),0])cube([25,3-supportWidth,6],true);	
+				}
+			}
+		//elongated sphere to cut from bottom frame to allow topbit to rotate
+		for ( i = [20 : 10 : 90] )
+			{
+			translate([0,length/2-3.5,4])rotate([i,0,0])cylinder(7,width/2-7,width/2-7,true);
+			}
+		}
+	hookForBand();
+		
+	}
+
+module hookForBand()
+	{
+	translate([0,-length/2-2.5,-height/2])cube([2.5,5,3],true);	
+	translate([0,-length/2-5,-height/2])cube([5,2.5,3],true);
 	}
 
 module tapBearing()
@@ -92,8 +128,14 @@ module topBit()
 	{
 	difference()
 		{
-		topBitExternal();
-		//cutout for bolt
+		union() 
+		{
+			topBitExternal();
+			//cutout for bolt
+			//hinge
+			translate([0,length/2-3,11.75])rotate([0,90,0])cylinder(25,3,3,true);
+		}
+
 		rotate([0,90,0])
 			{
 			translate([2.5,0,0])cube([5,10,50],true);
@@ -110,6 +152,9 @@ module topBit()
 				//tap viewing hole
 			cylinder(30,4.5,4.5);	
 		}
+	
+		translate([0,0,height-1.5])hookForBand();
+
 	}
 //topBitExternal used to subtract from bottomBit
 module topBitExternal()
@@ -142,7 +187,7 @@ module topBitExternal()
 		cube([21,length,10.5],true);
 
 	//hinge
-	translate([0,length/2-3,11.75])rotate([0,90,0])cylinder(25,3,3,true);
+	//translate([0,length/2-3,11.75])rotate([0,90,0])cylinder(25,3,3,true);
 
 
 	
@@ -154,7 +199,10 @@ module topBitExternal()
 
 //Render this
 bottomBit(length,width,height);
-//translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
-//translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
-//topBit();
-//translate([-8,-8,-height])4Bolts();
+translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
+translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
+topBit();
+
+//topBitExternal();
+
+
