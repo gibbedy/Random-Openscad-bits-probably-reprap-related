@@ -29,14 +29,14 @@ module bottomBit(length,width,height)
 		//cube for frame centered
 		cube([length,width,height+3],true);
 
-		//lhs bolt bearing
-		translate([-width/2,0,0])rotate([0,90,0])boltBearing();
+		//lhs bolt bearing 3 offset for the taps I'm using. -1 to give wall to help when printing
+		translate([-width/2-1,3,0])rotate([0,90,0])boltBearing();
 	
-		//rhs bolt bearing.. need to parameterize the 7 here
-		translate([width/2-7,0,0])rotate([0,90,0])boltBearing();
+		//rhs bolt bearing.. need to parameterize the 7 here. +1 to give wall to help when printing
+		translate([width/2-7+1,3,0])rotate([0,90,0])boltBearing();
 		
 		//bolt shaft
-		translate([-width/2,0,0])rotate([0,90,0])cylinder(width,4,4);
+		translate([-width/2,3,0])rotate([0,90,0])cylinder(width,4,4);
 
 		//remove space for top bit
 		topBitExternal();
@@ -62,9 +62,13 @@ module bottomBit(length,width,height)
 				}
 			}
 		//elongated sphere to cut from bottom frame to allow topbit to rotate
+		//need to find out a more efficient way to do this as it is very slow to render if
+		//i increase iterations.
 		for ( i = [20 : 10 : 90] )
 			{
-			translate([0,length/2-3.5,4])rotate([i,0,0])cylinder(7,width/2-7,width/2-7,true);
+			translate([0,length/2-3.5,4])rotate([i,0,0])cylinder(9,width/2-7,width/2-7,true);
+			echo("Whats taking so long");
+			echo();
 			}
 		}
 	hookForBand();
@@ -77,10 +81,6 @@ module hookForBand()
 	translate([0,-length/2-5,-height/2])cube([5,2.5,3],true);
 	}
 
-module tapBearing()
-	{
-	Bearing(4,13,5);
-	}
 
 module boltBearing()
 	{
@@ -93,8 +93,8 @@ module boltBearing()
 module tapBearing()
 	{
 	intDiameter=4;
-	extDiameter=13;
-	width=5;
+	extDiameter=13.5;
+	width=5.5;
 	bearingExternalGeom(extDiameter,width);
 	}
 
@@ -129,31 +129,57 @@ module topBit()
 	difference()
 		{
 		union() 
-		{
+			{
 			topBitExternal();
-			//cutout for bolt
+
 			//hinge
 			translate([0,length/2-3,11.75])rotate([0,90,0])cylinder(25,3,3,true);
-		}
-
-		rotate([0,90,0])
-			{
-			translate([2.5,0,0])cube([5,10,50],true);
-			cylinder(50,5,5,true);
 			}
-			//tap front bearing
-			translate([0,-width/2+5,4])rotate([90,0,0])tapBearing();
-
-			//tap back bearing
-			translate([0,width/2-5,4])rotate([270,0,0])tapBearing();
-
-			//tap shaft
-			translate([0,width/2,4])rotate([90,0,0])cylinder(width,2,2);
-				//tap viewing hole
+		//cutout for bolt
+		translate([0,3,0])
+			{
+			rotate([0,90,0])
+				{
+				translate([2.5,0,0])cube([5,10,50],true);
+				cylinder(50,5,5,true);
+				}
+			//tap viewing hole
 			cylinder(30,4.5,4.5);	
+			}
+		//tap front bearing
+	//	translate([0,-2.5,10])
+		//{
+		//	cube([13,5,20],true);
+		//	rotate([90,0,0])tapBearing();
+	//	}
+
+
+//		translate([0,-width/2+5,4]){		translate([0,-2.5,10])
+	//	{
+	//		cube([13,5,20],true);}
+	//	rotate([90,0,0])tapBearing();
+	//	}
+
+//need to parameterise this shit
+translate([0,-width/2+5.5,4])rotate([90,0,0])tapBearing();
+translate([0,-length/2+2.75,-6.25])cube([13.5,5.5,20],true);
+
+
+		//translate([0,-width/2+5,4])rotate([90,0,0])tapBearing();
+
+		//tap back bearing
+translate([0,width/2-5.5,4])rotate([270,0,0])tapBearing();
+translate([0,length/2-2.75,-6.25])cube([13.5,5.5,20],true);
+
+	//	translate([0,width/2-5,4])rotate([270,0,0])tapBearing();
+
+		//tap shaft
+		translate([0,width/2,4])rotate([90,0,0])cylinder(width,2,2);
+
 		}
-	
-		translate([0,0,height-1.5])hookForBand();
+	//hook
+	translate([0,0,height-1.5])hookForBand();
+
 
 	}
 //topBitExternal used to subtract from bottomBit
@@ -167,8 +193,11 @@ module topBitExternal()
 		{
 		//end cylinders. Need to change 7 to bolt bearing.width somehow.
 		//long large cylinder
-		//-7 to give room for bearings of 7 at each side
-		translate([0,length/2,4])rotate([90,0,0])cylinder(length,width/2-7,width/2-7);
+		//-7 to give room for bearings of 7 at each side 
+		translate([0,length/2+2,4])rotate([90,0,0])
+			{
+			cylinder(length+4,width/2-7,width/2-7);
+			}
 		//minus center to leave two ends
 		//2*5 for bearing, -2 for 1mm bearing backing
 		translate([0,length/2-6,4])rotate([90,0,0])cylinder(length-(2*5)-(2),12,12);
@@ -185,24 +214,21 @@ module topBitExternal()
 	translate([0,0,9.5])
 	
 		cube([21,length,10.5],true);
-
-	//hinge
-	//translate([0,length/2-3,11.75])rotate([0,90,0])cylinder(25,3,3,true);
-
-
-	
-
-	
 		
 	}
 
 
 //Render this
-bottomBit(length,width,height);
-translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
-translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
-topBit();
+translate([0,0,height/2+1.5])bottomBit(length,width,height);
+//translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
+//translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
+translate([0,0,height/2])rotate([0,180,0]){
+//topBit();
+}
 
+
+
+	
 //topBitExternal();
 
 
