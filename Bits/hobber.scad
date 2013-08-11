@@ -1,5 +1,5 @@
 //Hobbed bolt hobber thingy.
-//Needs to hold the bolt and m4 tap securely in position.
+//The plan is to hold the bolt and m4 tap securely in position.
 //My openscad is pretty bad :(
 
 use <Bolt.scad>;
@@ -85,7 +85,7 @@ module hookForBand()
 module boltBearing()
 	{
 	intDiameter=8;
-	extDiameter=22;
+	extDiameter=22.5;
 	width=7;
 	bearingExternalGeom(extDiameter,width);
 	}
@@ -147,34 +147,19 @@ module topBit()
 			cylinder(30,4.5,4.5);	
 			}
 		//tap front bearing
-	//	translate([0,-2.5,10])
-		//{
-		//	cube([13,5,20],true);
-		//	rotate([90,0,0])tapBearing();
-	//	}
-
-
-//		translate([0,-width/2+5,4]){		translate([0,-2.5,10])
-	//	{
-	//		cube([13,5,20],true);}
-	//	rotate([90,0,0])tapBearing();
-	//	}
-
+	
 //need to parameterise this shit
 translate([0,-width/2+5.5,4])rotate([90,0,0])tapBearing();
 translate([0,-length/2+2.75,-6.25])cube([13.5,5.5,20],true);
 
 
-		//translate([0,-width/2+5,4])rotate([90,0,0])tapBearing();
-
 		//tap back bearing
 translate([0,width/2-5.5,4])rotate([270,0,0])tapBearing();
 translate([0,length/2-2.75,-6.25])cube([13.5,5.5,20],true);
 
-	//	translate([0,width/2-5,4])rotate([270,0,0])tapBearing();
 
 		//tap shaft
-		translate([0,width/2,4])rotate([90,0,0])cylinder(width,2,2);
+		translate([0,width/2+3,4])rotate([90,0,0])cylinder(width+6,2,2);
 
 		}
 	//hook
@@ -219,12 +204,14 @@ module topBitExternal()
 
 
 //Render this
-translate([0,0,height/2+1.5])bottomBit(length,width,height);
+//translate([0,0,height/2+1.5]){
+bottomBit(length,width,height);
+//}
 //translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
 //translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
-translate([0,0,height/2])rotate([0,180,0]){
-//topBit();
-}
+//translate([0,0,height/2])rotate([0,180,0]){
+topBit();
+//}
 
 
 
