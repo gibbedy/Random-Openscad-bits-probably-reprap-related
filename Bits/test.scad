@@ -7,8 +7,9 @@ module Bearing(diameter)
 	cylinder(5,diameter,diameter);
 	}
 
-//I create my specific bearing I want to use without repeating code in 'Parent' Bearing()
-//I probably want to use multiple different sized bearings 
+//I create my specific bearing I want to use.
+//I'm thinking the advantage is I can create multiple 
+//bearings without repeating code in 'Parent' Bearing()
 module bearing_I_Want_to_Use()
 	{
 	Bearing(13);
