@@ -17,7 +17,7 @@ module Bearing(int_Diameter,ext_Diameter,width)
 	difference()
 		{
 		bearingExternalGeom(ext_Diameter,width);
-		cylinder(width,int_Diameter/2,int_Diameter/2);
+		cylinder(width,int_Diameter/2,int_Diameter/2,true);
 		}
 	
 
@@ -39,7 +39,7 @@ module bearingExternalGeom(ext_Diameter,width)
 	echo("External Diameter: ",ext_Diameter);
 	echo("Width: ",width);
 	echo("********************************************");
-	cylinder(width,ext_Diameter/2,ext_Diameter/2);
+	cylinder(width,ext_Diameter/2,ext_Diameter/2,true);
 	
 	}
 
