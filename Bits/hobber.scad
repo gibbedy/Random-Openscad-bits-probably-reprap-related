@@ -28,6 +28,8 @@ tapBearingDiameter=13.5;
 
 //bolt bearing dimension
 boltBearingWidth=7;
+boltBearingIntDiameter=8;
+boltBearingExtDiameter=22.5;
 
 //bolt dimensions
 boltDiameter=8;
@@ -40,6 +42,7 @@ wallThickness=1;
 //**********************************************
 
 //Things to do..........
+//need to get rid of unused modules and add all variables
 //need to create module for bearing washers for bolt bearing outer race
 //need to create module for washer for tap bearing outer race
 //probably do in Bearing.scad
@@ -54,10 +57,14 @@ module bottomBit(length,width,height)
 		cube([length,width,height],true);
 
 		//lhs bolt bearing. Tap is placed off center to put bolt under thread of tap.
-		translate([-width/2+boltBearingWidth/2,(width/2-tapThreadCenter-tapBearingWidth),0])rotate([0,90,0])boltBearing();
+		translate([-width/2+boltBearingWidth/2,(width/2-tapThreadCenter-tapBearingWidth),0])
+		rotate([0,90,0])
+		bearingExternalGeom(boltBearingExtDiameter,boltBearingWidth);
 	
 		//rhs bolt bearing...
-		translate([width/2-boltBearingWidth/2,(width/2-tapThreadCenter-tapBearingWidth),0])rotate([0,90,0])boltBearing();
+		translate([width/2-boltBearingWidth/2,(width/2-tapThreadCenter-tapBearingWidth),0])
+		rotate([0,90,0])
+		bearingExternalGeom(boltBearingExtDiameter,boltBearingWidth);
 		
 		//bolt shaft
 		translate([-width/2,(width/2-tapThreadCenter-tapBearingWidth),0])rotate([0,90,0])cylinder(width,boltDiameter/2,boltDiameter/2);
@@ -101,29 +108,7 @@ module bottomBit(length,width,height)
 	}
 
 
-module boltBearing()
-	{
-	intDiameter=8;
-	extDiameter=22.5;
-	width=7;
-	bearingExternalGeom(extDiameter,width);
-	}
 
-module tapBearing()
-	{
-	intDiameter=4;
-	extDiameter=13.5;
-	width=5.5;
-	bearingExternalGeom(extDiameter,width);
-	}
-
-module tapBearing2()
-	{
-	intDiameter=8;
-	extDiameter=22.5;
-	width=7;
-	bearingExternalGeom(extDiameter,width);
-	}
 
 module M4Tap()
 	{
@@ -144,10 +129,7 @@ module M8Bolt()
 	Bolt(diameter,length,head_size,head_depth);
 	}
 
-module 4Bolts()
-	{
-	cylinder(50,1.5,1.5);
-	}
+
 
 
 //topBit minus stuff
@@ -247,12 +229,12 @@ module topBitExternal()
 
 //Render this
 //translate([0,0,height/2+1.5]){
-//bottomBit(length,width,height);
+bottomBit(length,width,height);
 //}
 //translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
 //translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
 //translate([0,0,height/2])rotate([0,180,0]){
-topBit();
+//topBit();
 //}
 //translate([0,length/2-3.5,4])
 
