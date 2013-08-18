@@ -26,6 +26,11 @@ tapThreadCenter=10;
 tapBearingWidth=5;
 tapBearingDiameter=13.5;
 
+//tap end bearing 2 dimensions
+tapBearing2Width=5;
+tapBearing2Diameter=13.5;
+
+
 //bolt bearing dimension
 boltBearingWidth=7;
 boltBearingIntDiameter=8;
@@ -46,6 +51,7 @@ wallThickness=1;
 //need to create module for bearing washers for bolt bearing outer race
 //need to create module for washer for tap bearing outer race
 //probably do in Bearing.scad
+//need to add bit on bottomBit for hinge
 
 
 //main frame of tool
@@ -57,17 +63,17 @@ module bottomBit(length,width,height)
 		cube([length,width,height],true);
 
 		//lhs bolt bearing. Tap is placed off center to put bolt under thread of tap.
-		translate([-width/2+boltBearingWidth/2,(width/2-tapThreadCenter-tapBearingWidth),0])
+		translate([-length/2+boltBearingWidth/2,(width/2-tapThreadCenter-tapBearingWidth),0])
 		rotate([0,90,0])
 		bearingExternalGeom(boltBearingExtDiameter,boltBearingWidth);
 	
 		//rhs bolt bearing...
-		translate([width/2-boltBearingWidth/2,(width/2-tapThreadCenter-tapBearingWidth),0])
+		translate([length/2-boltBearingWidth/2,(width/2-tapThreadCenter-tapBearingWidth),0])
 		rotate([0,90,0])
 		bearingExternalGeom(boltBearingExtDiameter,boltBearingWidth);
 		
 		//bolt shaft
-		translate([-width/2,(width/2-tapThreadCenter-tapBearingWidth),0])rotate([0,90,0])cylinder(width,boltDiameter/2,boltDiameter/2);
+		translate([-length/2,(width/2-tapThreadCenter-tapBearingWidth),0])rotate([0,90,0])cylinder(length,boltDiameter/2,boltDiameter/2);
 
 		//remove space for top bit
 		topBitExternal();
@@ -84,13 +90,13 @@ module bottomBit(length,width,height)
 				difference()
 				//create semi circle (first bit of hinge cutout
 				{
-					rotate([0,90,0])cylinder(length-10,hingeDiameter/2,hingeDiameter/2,true);
+					rotate([0,90,0])cylinder(tapBearingDiameter+6*wallThickness+5,hingeDiameter/2,hingeDiameter/2,true);
 					//semi circle required to allow for support material later
-					translate([0,-hingeDiameter/4,0])cube([length-10,hingeDiameter/2,hingeDiameter],true);			
+					translate([0,-hingeDiameter/4,0])cube([tapBearingDiameter+6*wallThickness+5,hingeDiameter/2,hingeDiameter],true);			
 				}
 			
 			//vary hinge length here
-			translate([0,-hingeDiameter/4+(supportWidth/2),0])cube([length-10,hingeDiameter/2-supportWidth,hingeDiameter],true);	
+			translate([0,-hingeDiameter/4+(supportWidth/2),0])cube([tapBearingDiameter+6*wallThickness+5,hingeDiameter/2-supportWidth,hingeDiameter],true);	
 			}
 		}
 		//elongated sphere to cut from bottom frame to allow topbit to rotate
@@ -99,13 +105,33 @@ module bottomBit(length,width,height)
 		for ( i = [20 : 10 : 90] )
 		{
 			translate([0,width/2-(tapBearingWidth+4*wallThickness)/2,boltDiameter/2])rotate([i,0,0])cylinder(tapBearingWidth+4*wallThickness,tapBearingDiameter/2+3*wallThickness,tapBearingDiameter/2+3*wallThickness,true);
-			echo("Whats taking so long");
-			echo();
+
 		}
 	}
-	
+	//hing top strength
+	//Top bit to add strength to hinge**************************************************
+	translate([0,width/2-(hingeDiameter+3*wallThickness)/2,height/2+(3*wallThickness)/2])
+	{
 		
+		difference()
+		{
+			intersection()
+			{
+				translate([0,(3*wallThickness)/2,-hingeDiameter/2-(3*wallThickness)/2])
+				{
+					rotate([0,90,0])
+					cylinder(length,(hingeDiameter+6*wallThickness)/2,(hingeDiameter+6*wallThickness)/2,true);
+				}
+				
+				cube([length,hingeDiameter+3*wallThickness,3*wallThickness],true);
+			}
+
+			//cut out center bit where topbit goes
+			cube([(max(tapBearingDiameter,tapBearing2Diameter)+6*wallThickness),hingeDiameter+3*wallThickness,3*wallThickness],true);	
+		}
 	}
+	//Top bit to add strength to hinge**************************************************
+}
 
 
 
@@ -145,7 +171,7 @@ module topBit()
 			//translate([0,length/2-3,11.75])rotate([0,90,0])cylinder(25,3,3,true);
 
 			translate([0,width/2-hingeDiameter/2,height/2-hingeDiameter/2])
-			rotate([0,90,0])cylinder(length-10,hingeDiameter/2,hingeDiameter/2,true);
+			rotate([0,90,0])cylinder(tapBearingDiameter+6*wallThickness+5,hingeDiameter/2,hingeDiameter/2,true);
 
 			}
 		//cutout for bolt
@@ -160,11 +186,11 @@ module topBit()
 			cylinder(30,4.5,4.5);	
 			}
 		//tap front bearing
-		translate([0,-width/2+tapBearingWidth/2+1*wallThickness,boltDiameter/2])
-		rotate([90,0,0])bearingExternalGeom(tapBearingDiameter,tapBearingWidth);
+		translate([0,-width/2+tapBearing2Width/2+1*wallThickness,boltDiameter/2])
+		rotate([90,0,0])bearingExternalGeom(tapBearing2Diameter,tapBearing2Width);
 
-		translate([0,-width/2+tapBearingWidth/2+1*wallThickness,-(tapBearingDiameter+6*wallThickness)/2/2+boltDiameter/2])
-		cube([tapBearingDiameter,tapBearingWidth,(tapBearingDiameter+6*wallThickness)/2],true);
+		translate([0,-width/2+tapBearing2Width/2+1*wallThickness,-(tapBearing2Diameter+6*wallThickness)/2/2+boltDiameter/2])
+		cube([tapBearing2Diameter,tapBearing2Width,(tapBearing2Diameter+6*wallThickness)/2],true);
 
 
 		//tap back bearing
@@ -204,25 +230,27 @@ module topBitExternal()
 	//	translate([0,length/2-tapBearingWidth-wallThickness,4])rotate([90,0,0])cylinder(length-(2*tapBearingWidth)-(2*wallThickness),12,12);
 	//	}
 /////////////
-
+//tap bearing
 	translate([0,width/2-(tapBearingWidth+4*wallThickness)/2,boltDiameter/2])
 	rotate([90,0,0])
 	cylinder(tapBearingWidth+4*wallThickness,tapBearingDiameter/2+3*wallThickness,tapBearingDiameter/2+3*wallThickness,true);
 
-	translate([0,-(width/2-(tapBearingWidth+4*wallThickness)/2),boltDiameter/2])
+//tapbearing2
+	translate([0,-(width/2-(tapBearing2Width+4*wallThickness)/2),boltDiameter/2])
 	rotate([90,0,0])
-	cylinder(tapBearingWidth+4*wallThickness,tapBearingDiameter/2+3*wallThickness,tapBearingDiameter/2+3*wallThickness,true);
+	cylinder(tapBearing2Width+4*wallThickness,tapBearing2Diameter/2+3*wallThickness,tapBearing2Diameter/2+3*wallThickness,true);
 
 	//shaft
 	translate([0,length/2-6,4])rotate([90,0,0])cylinder(length-13,6.5,6.5);	
 
 	//top square bit
 	//keeping things parametric is tricky
-	translate([0,0,boltDiameter/2+(height/2-boltDiameter/2)/2])
+	translate([0,0,boltDiameter/2+ max(height/2-boltDiameter/2,(tapBearing2Diameter+6*wallThickness)/2)/2])
 
 	
 		//cube([tapBearingDiameter+6*wallThickness,width,(tapBearingDiameter+6*wallThickness)/2],true);
-		cube([tapBearingDiameter+6*wallThickness,width,height/2-boltDiameter/2],true);
+		//needs to be the bigger of height or tapbearing2
+		cube([max(tapBearingDiameter,tapBearing2Diameter)+6*wallThickness,width,max(height/2-boltDiameter/2,(tapBearing2Diameter+6*wallThickness)/2)],true);
 		
 	}
 
