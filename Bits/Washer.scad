@@ -2,7 +2,7 @@
 
 
 //Create a bearing by specifying internal diameter, external diameter and width.
-module bearing(ext_Diameter,int_Diameter,width)
+module Bearing(int_Diameter,ext_Diameter,width)
 	{
 	echo("********************************************");
 	echo("Creating bearing with following dimensions");
@@ -57,7 +57,7 @@ width=5;
 //624=4,13,5
 //**********************************************
 
-bearing(ext_Diameter,int_Diameter,width);
+Bearing(int_Diameter,ext_Diameter,width);
 
 
 

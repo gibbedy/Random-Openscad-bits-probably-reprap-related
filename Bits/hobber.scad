@@ -14,7 +14,7 @@ length=35;
 width=35;
 
 //frame height
-height=29.5;
+height=27.5;
 
 //with of support structure for hinge overhang
 supportWidth=0.7;
@@ -25,16 +25,19 @@ tapThreadCenter=10;
 //tap end bearing dimensions
 tapBearingWidth=5;
 tapBearingDiameter=13.5;
+tapBearingIntDiameter=4;
 
 //tap end bearing 2 dimensions
 tapBearing2Width=5;
 tapBearing2Diameter=13.5;
+tapBearing2IntDiameter=4;
 
 
 //bolt bearing dimension
 boltBearingWidth=7;
 boltBearingIntDiameter=8;
 boltBearingExtDiameter=22.5;
+boltBearingRaceWidth=2;
 
 //bolt dimensions
 boltDiameter=8;
@@ -47,7 +50,7 @@ wallThickness=1;
 //**********************************************
 
 //Things to do..........
-//need to get rid of unused modules and add all variables
+
 //need to create module for bearing washers for bolt bearing outer race
 //need to create module for washer for tap bearing outer race
 //probably do in Bearing.scad
@@ -57,6 +60,16 @@ wallThickness=1;
 //main frame of tool
 module bottomBit(length,width,height)
 {
+		//lhs bolt washer for bearing outer race
+		translate([-length/2+boltBearingWidth-.5/2,(width/2-tapThreadCenter-tapBearingWidth),0])
+		rotate([0,90,0])
+		bearing(boltBearingExtDiameter,boltBearingExtDiameter-boltBearingRaceWidth,.5);
+
+		//rhs bolt washer for bearing outer race
+		translate([length/2-boltBearingWidth+.5/2,(width/2-tapThreadCenter-tapBearingWidth),0])
+		rotate([0,90,0])
+		bearing(boltBearingExtDiameter,boltBearingExtDiameter-boltBearingRaceWidth,.5);
+
 	difference()
 	{
 		//cube for frame centered
@@ -185,26 +198,68 @@ module topBit()
 			//tap viewing hole
 			cylinder(30,4.5,4.5);	
 			}
-		//tap front bearing
-		translate([0,-width/2+tapBearing2Width/2+1*wallThickness,boltDiameter/2])
-		rotate([90,0,0])bearingExternalGeom(tapBearing2Diameter,tapBearing2Width);
 
-		translate([0,-width/2+tapBearing2Width/2+1*wallThickness,-(tapBearing2Diameter+6*wallThickness)/2/2+boltDiameter/2])
+//-(width/2-(tapBearing2Width+4*wallThickness)/2)
+
+		//tap front bearing
+		translate([0,-(width/2-(tapBearing2Width+4*wallThickness)/2),boltDiameter/2])
+		rotate([90,0,0])bearingExternalGeom(tapBearing2Diameter,tapBearing2Width);
+		
+		//slot to insert bearing
+		translate([0,-(width/2-(tapBearing2Width+4*wallThickness)/2),-(tapBearing2Diameter+6*wallThickness)/2/2+boltDiameter/2])
 		cube([tapBearing2Diameter,tapBearing2Width,(tapBearing2Diameter+6*wallThickness)/2],true);
+
+		//cutout to free bearing inner race and allow for bush to adjust internal hole size
+		translate([0,-(width/2-(tapBearing2Width+4*wallThickness)/2),boltDiameter/2])
+		rotate([90,0,0])
+		cylinder(tapBearing2Width+1,tapBearing2IntDiameter/2+2,tapBearing2IntDiameter/2+2,true);
 
 
 		//tap back bearing
-		translate([0,width/2-tapBearingWidth/2-1*wallThickness,boltDiameter/2])
+		translate([0,width/2-(tapBearingWidth+4*wallThickness)/2,boltDiameter/2])
 		rotate([90,0,0])bearingExternalGeom(tapBearingDiameter,tapBearingWidth);
 
-		translate([0,width/2-tapBearingWidth/2-1*wallThickness,-(tapBearingDiameter+6*wallThickness)/2/2+boltDiameter/2])
+		//slot to insert bearing
+		translate([0,width/2-(tapBearingWidth+4*wallThickness)/2,-(tapBearingDiameter+6*wallThickness)/2/2+boltDiameter/2])
 		cube([tapBearingDiameter,tapBearingWidth,(tapBearingDiameter+6*wallThickness)/2],true);
 
+		//cutout to free bearing inner race and allow for bush to adjust internal hole size
+		translate([0,width/2-(tapBearingWidth+4*wallThickness)/2,boltDiameter/2])
+		rotate([90,0,0])
+		cylinder(tapBearingWidth+1,tapBearingIntDiameter/2+2,tapBearingIntDiameter/2+2,true);
 
 		//tap shaft
 		translate([0,width/2+3,4])rotate([90,0,0])cylinder(width+6,2,2);
 
 		}
+//bit for securing back bearing in 
+translate([0,width/2-(tapBearingWidth+4*wallThickness)/2,boltDiameter/2])
+rotate([90,0,0])
+{
+	//side 1
+	translate([0,0,(tapBearingWidth/2-.125)])
+	bearing(tapBearingDiameter+2,tapBearingDiameter,.25);
+
+	//side 2
+	translate([0,0,-(tapBearingWidth/2-.125)])
+	bearing(tapBearingDiameter+2,tapBearingDiameter,.25);
+}
+
+//bit for securing front bearing in 
+translate([0,-(width/2-(tapBearing2Width+4*wallThickness)/2),boltDiameter/2])
+rotate([90,0,0])
+{
+	//side 1
+	translate([0,0,(tapBearing2Width/2-.125)])
+	bearing(tapBearing2Diameter+2,tapBearing2Diameter,.25);
+
+	//side 2
+	translate([0,0,-(tapBearing2Width/2-.125)])
+	bearing(tapBearing2Diameter+2,tapBearing2Diameter,.25);
+}
+
+
+
 
 
 	}
@@ -257,14 +312,16 @@ module topBitExternal()
 
 //Render this
 //translate([0,0,height/2+1.5]){
-bottomBit(length,width,height);
+//bottomBit(length,width,height);
 //}
 //translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
 //translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
 //translate([0,0,height/2])rotate([0,180,0]){
-//topBit();
+topBit();
 //}
 //translate([0,length/2-3.5,4])
+
+
 
 
 
