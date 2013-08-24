@@ -8,13 +8,14 @@ use <Tap.scad>;
 
 //Parameters ***********************************
 //frame length
-length=35;
+lengthDesired=2;
 
 //frame width
-width=35;
+widthDesired=2;
 
 //frame height
-height=27.5;
+heightDesired=2;
+
 
 //with of support structure for hinge overhang
 supportWidth=0.7;
@@ -47,14 +48,22 @@ hingeDiameter=6;
 
 //print wall thickness
 wallThickness=1;
+
+//increase frame width as required
+width=max(widthDesired,tapBearingWidth+tapBearing2Width+boltBearingExtDiameter);
+
+//increase frame length if required to accomidate bearing used
+length=max(lengthDesired,max(tapBearingDiameter,tapBearing2Diameter)+6*wallThickness+2*(boltBearingWidth+wallThickness));
+echo("length=",width);
+
+height=maxOf3(heightDesired,(tapBearing2Diameter+6*wallThickness)+boltDiameter,(tapBearingDiameter+6*wallThickness)+boltDiameter);
 //**********************************************
 
 //Things to do..........
 
-//need to create module for bearing washers for bolt bearing outer race
-//need to create module for washer for tap bearing outer race
-//probably do in Bearing.scad
-//need to add bit on bottomBit for hinge
+
+
+
 //need to automatically adjust frame size length to accomidate topbit bearing size
 //if needed to stop gaps in bearing support
 
@@ -190,12 +199,14 @@ module topBit()
 
 			}
 		//cutout for bolt
-		translate([0,3,0])
+		///////////////////////////////////////////////////////////////fix
+		translate([0,width/2-tapThreadCenter-tapBearingWidth,0])
 			{
 			rotate([0,90,0])
 				{
-				translate([2.5,0,0])cube([5,10,50],true);
-				cylinder(50,5,5,true);
+				translate([(boltDiameter+wallThickness)/2,0,0])cube([(boltDiameter+wallThickness),(boltDiameter+wallThickness),length],true);
+				cylinder(length,(boltDiameter+wallThickness)/2,(boltDiameter+wallThickness)/2,true);
+				//cylinder(length,5,5,true);
 				}
 			//tap viewing hole
 			cylinder(30,4.5,4.5);	
@@ -269,24 +280,6 @@ rotate([90,0,0])
 module topBitExternal()
 	{
 
-
-
-//////////////////////////	
-//	difference()
-//		{
-		//end cylinders. Need to change 7 to bolt bearing.width somehow.
-		//long large cylinder
-		//-7 to give room for bearings of 7 at each side
- 
-	//	translate([0,length/2+2,4])rotate([90,0,0])
-	//		{
-	//		cylinder(length+4,width/2-7,width/2-7);
-	//		}
-		//minus center to leave two ends
-		//2*5 for bearing, -2 for 1mm bearing backing
-	//	translate([0,length/2-tapBearingWidth-wallThickness,4])rotate([90,0,0])cylinder(length-(2*tapBearingWidth)-(2*wallThickness),12,12);
-	//	}
-/////////////
 //tap bearing
 	translate([0,width/2-(tapBearingWidth+4*wallThickness)/2,boltDiameter/2])
 	rotate([90,0,0])
@@ -306,9 +299,8 @@ module topBitExternal()
 	maxOf3(height/2-boltDiameter/2,(tapBearing2Diameter+6*wallThickness)/2,(tapBearingDiameter+6*wallThickness)/2)/2])
 
 	
-		//cube([tapBearingDiameter+6*wallThickness,width,(tapBearingDiameter+6*wallThickness)/2],true);
 		//needs to be the bigger of height or tapbearing2
-		cube([maxOf3(tapBearingDiameter,tapBearing2Diameter,tapBearingDiameter)+6*wallThickness,width,
+		cube([max(tapBearingDiameter,tapBearing2Diameter)+6*wallThickness,width,
 		maxOf3(height/2-boltDiameter/2,(tapBearing2Diameter+6*wallThickness)/2,(tapBearingDiameter+6*wallThickness)/2)],true);
 		
 	}
@@ -317,16 +309,18 @@ function maxOf3(val1,val2,val3)=max(val1,max(val2,val3));
 
 //Render this
 //translate([0,0,height/2+1.5]){
-bottomBit(length,width,height);
+//bottomBit(length,width,height);
 //}
 //translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
 //translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
 //translate([0,0,height/2])rotate([0,180,0]){
-//topBit();
+topBit();
 //}
 //translate([0,length/2-3.5,4])
 
-
+echo("Length:",length);
+echo ("Width:",width);
+echo ("Height:",height);
 
 
 
