@@ -6,7 +6,11 @@ use <Bolt.scad>;
 use <Bearing.scad>;
 use <Tap.scad>;
 
+
 //Parameters ***********************************
+
+//uncomment to increase resolution of cylinders
+//$fn=50;
 //frame length
 lengthDesired=35;
 
@@ -50,16 +54,16 @@ hingeDiameter=6;
 tapDiameter=4;
 
 //print wall thickness
-wallThickness=.7;
+wallThickness=.83;
 
 //bearing strength factor
 //number of extra material required to hold bearing
 //need to experiment with material
-bearingStrength=1;
+bearingStrength=2;
 //wall strength factor
 //with of walls for bearings
 //need to experiment with material
-wallStrength=3;
+wallStrength=2;
 
 //width of ring to hold tap bearings in place
 bearingLocatorWidth=.125;
@@ -221,29 +225,31 @@ module topBit()
 		}
 
 		//tap front bearing
-		translate([0,-(width/2-(tapBearing2Width+wallStrength*wallThickness)/2),boltDiameter/2])
+		//translate([0,-(width/2-(tapBearing2Width+wallStrength*wallThickness)/2),boltDiameter/2])
+		translate([0,-(width/2-(tapBearing2Width)/2+.01),boltDiameter/2])
 		rotate([90,0,0])bearingExternalGeom(tapBearing2Diameter,tapBearing2Width);
 		
 		//slot to insert bearing
-		translate([0,-(width/2-(tapBearing2Width+wallStrength*wallThickness)/2),-(tapBearing2Diameter+bearingStrength*2*wallThickness)/2/2+boltDiameter/2])
-		cube([tapBearing2Diameter,tapBearing2Width,(tapBearing2Diameter+bearingStrength*2*wallThickness)/2],true);
+		//translate([0,-(width/2-(tapBearing2Width+wallStrength*wallThickness)/2),-(tapBearing2Diameter+bearingStrength*2*wallThickness)/2/2+boltDiameter/2])
+		//cube([tapBearing2Diameter,tapBearing2Width,(tapBearing2Diameter+bearingStrength*2*wallThickness)/2],true);
 
 		//cutout to free bearing inner race and allow for bush to adjust internal hole size
-		translate([0,-(width/2-(tapBearing2Width+wallStrength*wallThickness)/2),boltDiameter/2])
+		translate([0,-(width/2-(tapBearing2Width)/2+.01),boltDiameter/2])
 		rotate([90,0,0])
 		cylinder(tapBearing2Width+1,tapBearing2IntDiameter/2+2,tapBearing2IntDiameter/2+2,true);
 
 
 		//tap back bearing
-		translate([0,width/2-(tapBearingWidth+wallStrength*wallThickness)/2,boltDiameter/2])
+		//translate([0,width/2-(tapBearingWidth+wallStrength*wallThickness)/2,boltDiameter/2])
+		translate([0,width/2-(tapBearingWidth)/2+.01,boltDiameter/2])
 		rotate([90,0,0])bearingExternalGeom(tapBearingDiameter,tapBearingWidth);
 
 		//slot to insert bearing
-		translate([0,width/2-(tapBearingWidth+wallStrength*wallThickness)/2,-(tapBearingDiameter+bearingStrength*2*wallThickness)/2/2+boltDiameter/2])
-		cube([tapBearingDiameter,tapBearingWidth,(tapBearingDiameter+bearingStrength*2*wallThickness)/2],true);
+		//translate([0,width/2-(tapBearingWidth+wallStrength*wallThickness)/2,-(tapBearingDiameter+bearingStrength*2*wallThickness)/2/2+boltDiameter/2])
+		//cube([tapBearingDiameter,tapBearingWidth,(tapBearingDiameter+bearingStrength*2*wallThickness)/2],true);
 
 		//cutout to free bearing inner race and allow for bush to adjust internal hole size
-		translate([0,width/2-(tapBearingWidth+wallStrength*wallThickness)/2,boltDiameter/2])
+		translate([0,(width/2-(tapBearing2Width)/2+.01),boltDiameter/2])
 		rotate([90,0,0])
 		cylinder(tapBearingWidth+1,tapBearingIntDiameter/2+2,tapBearingIntDiameter/2+2,true);
 
@@ -251,6 +257,8 @@ module topBit()
 		translate([0,width/2+3,4])rotate([90,0,0])cylinder(width+6,2,2);
 	}
 
+module notUsedanyMore()
+{
 	//bit for securing back bearing in 
 	translate([0,width/2-(tapBearingWidth+wallStrength*wallThickness)/2,boltDiameter/2])
 	rotate([90,0,0])
@@ -276,6 +284,8 @@ module topBit()
 		translate([0,0,-(tapBearing2Width/2-bearingLocatorWidth/2)])
 		bearing(tapBearingDiameter+bearingStrength*2*wallThickness,tapBearingDiameter,bearingLocatorWidth);
 	}
+}
+
 }
 
 //topBitExternal used to subtract from bottomBit
@@ -316,7 +326,7 @@ module tapBearingBush()
 		cylinder(tapBearingWidth,tapDiameter/2,tapDiameter/2);
 	}
 //bush for tap end
-	translate([0,tapBearing2IntDiameter,0])
+	translate([0,tapBearing2IntDiameter+1,0])
 	difference()
 	{
 		cylinder(tapBearing2Width,tapBearing2IntDiameter/2,tapBearing2IntDiameter/2);
@@ -332,13 +342,13 @@ function maxOf3(val1,val2,val3)=max(val1,max(val2,val3));
 //}
 //translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
 //translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
-translate([0,0,0])rotate([0,180,0])
-topBit();
+//translate([0,0,0])rotate([0,180,0])
+//topBit();
 //}
-translate([37,0,0])
-bottomBit(length,width,height);
+//translate([37,0,0])
+//bottomBit(length,width,height);
 
-translate([-20,0,-height/2])
+//translate([-20,0,-height/2])
 tapBearingBush();
 
 echo("Length:",length);
