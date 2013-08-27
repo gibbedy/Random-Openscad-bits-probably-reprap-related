@@ -10,7 +10,7 @@ use <Tap.scad>;
 //Parameters ***********************************
 
 //uncomment to increase resolution of cylinders
-//$fn=50;
+$fn=50;
 //frame length
 lengthDesired=35;
 
@@ -316,7 +316,7 @@ module topBitExternal()
 	maxOf3(height/2-boltDiameter/2,(tapBearing2Diameter+bearingStrength*2*wallThickness)/2,(tapBearingDiameter+bearingStrength*2*wallThickness)/2)],true);
 }
 
-module tapBearingBush()
+module tapBearingBush1()
 {
 
 //bush with tap clearance hole
@@ -325,6 +325,14 @@ module tapBearingBush()
 		cylinder(tapBearingWidth,tapBearingIntDiameter/2,tapBearingIntDiameter/2);
 		cylinder(tapBearingWidth,tapDiameter/2,tapDiameter/2);
 	}
+	//use layer width so no infil and just perimeters.
+	//Slic3r gives me some funny stuff sometimes
+	echo("Print at: ",(tapBearingIntDiameter/2-tapDiameter/2)/3,"mm Layer width");
+}
+
+module tapBearingBush2()
+{
+
 //bush for tap end
 	translate([0,tapBearing2IntDiameter+1,0])
 	difference()
@@ -332,7 +340,11 @@ module tapBearingBush()
 		cylinder(tapBearing2Width,tapBearing2IntDiameter/2,tapBearing2IntDiameter/2);
 		cylinder(tapBearing2Width,tapDiameter*.84/2,tapDiameter*.84/2);
 	}
+	//use layer width so no infil and just perimeters.
+	//Slic3r gives me some funny stuff sometimes
+	echo("Print at: ",(tapBearing2IntDiameter/2-tapDiameter*.84/2)/3,"mm Layer width");
 }
+
 
 function maxOf3(val1,val2,val3)=max(val1,max(val2,val3));
 
@@ -349,11 +361,9 @@ function maxOf3(val1,val2,val3)=max(val1,max(val2,val3));
 //bottomBit(length,width,height);
 
 //translate([-20,0,-height/2])
-tapBearingBush();
+tapBearingBush2();
 
-echo("Length:",length);
-echo ("Width:",width);
-echo ("Height:",height);
+
 
 
 
