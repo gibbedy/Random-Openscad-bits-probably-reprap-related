@@ -32,6 +32,20 @@ module Bolt(diameter,length,head_size,head_depth)
 	translate([0,0,head_depth]) cylinder(length,shaft_radius,shaft_radius);
 	}
 
+module nut(nut_size,head_depth)
+{
+	side_length=2*nut_size/2* tan(180/6);
+
+
+
+
+	//create hexagonal head from 3 cubes rotated 120 degrees
+	translate([-side_length/2,-nut_size/2,-head_depth/2]) cube([side_length,nut_size,head_depth]);
+	rotate([0,0,120]) translate([-side_length/2,-nut_size/2,-head_depth/2])cube([side_length,nut_size,head_depth]);
+	rotate([0,0,240]) translate([-side_length/2,-nut_size/2,-head_depth/2])cube([side_length,nut_size,head_depth]);
+}
+
+
 //Parameters ***********************************
 //diameter of shaft
 diameter=8;
@@ -47,9 +61,9 @@ head_depth=4.8;
 
 //**********************************************
 
-Bolt(diameter,length,head_size,head_depth);
+//Bolt(diameter,length,head_size,head_depth);
 
-
+nut(5,3);
 
 
 

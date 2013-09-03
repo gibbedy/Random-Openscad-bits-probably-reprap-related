@@ -401,12 +401,12 @@ function maxOf3(val1,val2,val3)=max(val1,max(val2,val3));
 //}
 //translate([0,-length/2-20,4])rotate([270,0,0]) M4Tap();
 //translate([-length/2-7,0,0])rotate([0,90,0])M8Bolt();
-//translate([0,0,0])rotate([0,180,0])
-//topBit();
+translate([0,0,0])rotate([0,180,0])
+topBit();
 
 //}
-//translate([37,0,0])
-//bottomBit(length,width,height);
+translate([37,0,0])
+bottomBit(length,width,height);
 
 //translate([-20,0,-height/2])
 //tapBearingBush1();
@@ -414,7 +414,7 @@ function maxOf3(val1,val2,val3)=max(val1,max(val2,val3));
 //top hook for elastic
 
 //topBitExternal();
-	translate([0,-30,-height/2+hookSize/2+.5])
-rotate([90,0,0])topHook();
+//	translate([0,-30,-height/2+hookSize/2+.5])
+//rotate([90,0,0])topHook();
 
 

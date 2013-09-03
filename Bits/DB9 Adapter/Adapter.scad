@@ -1,3 +1,6 @@
+use <..\Bolt.scad>
+$fn=50;
+
 //Extrusion width used when printing
 extrusionWidth=.7;
 
@@ -22,14 +25,13 @@ plate2Width=31;
 module mainBit()
 {
 //main frame
-cube([max(plate1Width,plate2Width),
+cube([max(plate1Width,plate2Width)+4*extrusionWidth,
 max(plate1Width,plate2Width),
 max(plate1Height,plate2Height)+6*extrusionWidth],true);
 
 
 }
 
-//mainBit();
 
 module plugCutout()
 {
@@ -48,10 +50,10 @@ polygon(points=[[0,0],
 module plates() 
 {
 //plates
-translate([0,-(plate1Width/2-extrusionWidth),0])
+translate([0,-(plate1Width/2-2*extrusionWidth-plate1Thickness/2),0])
 cube([plate1Width,plate1Thickness,plate1Height],true);
 
-translate([0,(plate1Width/2-extrusionWidth),0])
+translate([0,(plate1Width/2-2*extrusionWidth-plate1Thickness/2),0])
 cube([plate1Width,plate1Thickness,plate1Height],true);
 }
 
@@ -59,17 +61,31 @@ module screwHoles()
 {
 
 	translate([(max(plate1Width,plate2Width)/2-screwDiameter),0,0])
+	{	
 	cylinder(max(plate1Height,plate2Height)+6*extrusionWidth,
-	screwDiameter/2,screwDiameter/2,true);
+	screwDiameter/2,screwDiameter/2,true);	
+	translate([0,0,-(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
+	nut(5,5);
+	translate([0,0,(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
+	cylinder(5,2.5,2.5,true);
+	}
 
 	translate([-(max(plate1Width,plate2Width)/2-screwDiameter),0,0])
+	{
 	cylinder(max(plate1Height,plate2Height)+6*extrusionWidth,
 	screwDiameter/2,screwDiameter/2,true);
+	translate([0,0,(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
+	nut(5,5);
+	translate([0,0,-(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
+	cylinder(5,2.5,2.5,true);
+	}
 }
 
 
 
 //put it all together
+module putTogether()
+{
 difference()
 {
 mainBit();
@@ -77,8 +93,38 @@ plugCutout();
 plates();
 screwHoles();
 }
+}
 
+//screwHoles();
+//putTogether();
 
+module plate()
+{
+//arrange plate
+rotate([180,0,0])
+{
+//top half
+translate([0,32,0])
+rotate([180,0,0])
+intersection()
+{
+putTogether();
+translate([0,0,(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
+cube([max(plate1Width,plate2Width)+10,
+max(plate1Width,plate2Width)+10,
+max(plate1Height,plate2Height)+6*extrusionWidth],true);
+}
 
-
+//bottom half
+intersection()
+{
+putTogether();
+translate([0,0,-(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
+cube([max(plate1Width,plate2Width)+10,
+max(plate1Width,plate2Width),
+max(plate1Height,plate2Height)+6*extrusionWidth],true);
+}
+}
+}
+plate();
 
