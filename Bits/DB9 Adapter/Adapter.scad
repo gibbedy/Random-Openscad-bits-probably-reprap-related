@@ -8,18 +8,18 @@ extrusionWidth=.7;
 screwDiameter=3.5;
 
 //plug1 dimensions 
-plug1Height=11;
-plug1WidthTop=17.5;
-plug1WidthBottom=19.5;
+plug1Height=11.5;
+plug1WidthTop=18;
+plug1WidthBottom=20.5;
 plate1Height=13;
-plate1Width=31;
-plate1Thickness=1.25;
+plate1Width=32.5;
+plate1Thickness=1.75;
 //plug2 dimensions
 plug2Height=11;
-plug2WidthTop=17.5;
-plug2WidthBottom=19.5;
+plug2WidthTop=18;
+plug2WidthBottom=20.5;
 plate2Height=13;
-plate2Width=31.5;
+plate2Width=32.5;
 
 
 module mainBit()
@@ -65,7 +65,7 @@ module screwHoles()
 	cylinder(max(plate1Height,plate2Height)+6*extrusionWidth,
 	screwDiameter/2,screwDiameter/2,true);	
 	translate([0,0,-(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
-	nut(7,5);
+	nut(6,5);
 	translate([0,0,(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
 	cylinder(5,3.5,3.5,true);
 	}
@@ -75,7 +75,7 @@ module screwHoles()
 	cylinder(max(plate1Height,plate2Height)+6*extrusionWidth,
 	screwDiameter/2,screwDiameter/2,true);
 	translate([0,0,(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
-	nut(7,5);
+	nut(6,5);
 	translate([0,0,-(max(plate1Height,plate2Height)+6*extrusionWidth)/2])
 	cylinder(5,3.5,3.5,true);
 	}
@@ -104,7 +104,7 @@ module plate()
 rotate([180,0,0])
 {
 //top half
-translate([0,32,0])
+translate([40,0,0])
 rotate([180,0,0])
 intersection()
 {
