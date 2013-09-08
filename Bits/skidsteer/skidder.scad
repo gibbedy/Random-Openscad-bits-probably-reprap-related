@@ -6,6 +6,11 @@ motorDiameter=42.8;
 motorShaftLength=17;
 motorShaftDiameter=5;
 
+//axle Dimensions
+axleDiameter=8;
+axleLength=55;
+
+wallThickness=5;
 //Motor with geometry to allow mounting holes to be cutout
 module motor()
 {
@@ -50,8 +55,7 @@ module motor()
 
 module axles()
 {
-	axleDiameter=8;
-	axleLength=55;
+
 	
 	translate([100,0,-50])
 	rotate([-90,0,0])
@@ -61,20 +65,29 @@ module axles()
 	rotate([-90,0,0])
 	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
-	translate([150,0,50])
+	translate([150,0,0])
 	rotate([-90,0,0])
 	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
-	translate([-150,0,50])
+	translate([-150,0,0])
+	rotate([-90,0,0])
+	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+
+	translate([50,0,0])
+	rotate([-90,0,0])
+	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+
+	translate([-50,0,0])
 	rotate([-90,0,0])
 	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
 }
+
 //motor spacing off center
 translate([0,motorLength,0])
 rotate([-90,0,0])
 motor();
 
-translate([motorLength/2+motorLength-axleLength/2,0,0])
+translate([0,motorLength/2+motorLength-axleLength/2+wallThickness,0])
 axles();
 
