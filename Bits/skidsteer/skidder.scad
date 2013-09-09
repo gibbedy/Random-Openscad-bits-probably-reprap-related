@@ -11,6 +11,42 @@ axleDiameter=8;
 axleLength=55;
 
 wallThickness=5;
+
+//chassis wheel points
+	width=30;
+
+	bottomFrontWheel=[100,0,-50];
+	bottomFrontWheel2=pointPlusWidth(bottomFrontWheel,width);
+	bottomBackWheel=[-100,0,-50];
+	bottomBackWheel2=pointPlusWidth(bottomBackWheel,width);
+	topFrontWheel=[150,0,0];
+	topFrontWheel2=pointPlusWidth(topFrontWheel,width);
+	topBackWheel=[-150,0,0];
+	topBackWheel2=pointPlusWidth(topBackWheel,width);
+	frontDriveIdler=[50,0,0];
+	frontDriveIdler2=pointPlusWidth(frontDriveIdler,width);
+	backDriveIdler=[-50,0,0];
+	backDriveIdler2=pointPlusWidth(backDriveIdler,width);
+
+function pointPlusWidth(vec3,width)=[vec3[0],width,vec3[2]];
+function vec3ToVec2(vec3)=[vec3[0],vec3[2]];
+
+//chassis
+module chassis()
+{
+
+	polyhedron(
+  points=[ bottomFrontWheel,bottomFrontWheel2,topFrontWheel,topFrontWheel2, 
+           frontDriveIdler,frontDriveIdler2,backDriveIdler,backDriveIdler2,topBackWheel,
+			topBackWheel2,bottomBackWheel,bottomBackWheel2],                                 
+  triangles=[ [0,2,1],[1,2,3],[2,4,3],[3,4,5],          
+              [4,6,5],[5,6,7],[6,8,7],[7,8,9],
+				  [8,10,9],[9,10,11],[10,0,11],
+					[11,0,1]]);
+	
+
+}
+
 //Motor with geometry to allow mounting holes to be cutout
 module motor()
 {
@@ -56,38 +92,39 @@ module motor()
 module axles()
 {
 
-	
-	translate([100,0,-50])
+
+	translate(bottomFrontWheel)
 	rotate([-90,0,0])
 	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
-	translate([-100,0,-50])
+	translate(bottomBackWheel)
 	rotate([-90,0,0])
 	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
-	translate([150,0,0])
+	translate(topFrontWheel)
 	rotate([-90,0,0])
 	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
-	translate([-150,0,0])
+	translate(topBackWheel)
 	rotate([-90,0,0])
 	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
-	translate([50,0,0])
+	translate(frontDriveIdler)
 	rotate([-90,0,0])
 	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
-	translate([-50,0,0])
+	translate(backDriveIdler)
 	rotate([-90,0,0])
 	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
 }
 
 //motor spacing off center
-translate([0,motorLength,0])
-rotate([-90,0,0])
-motor();
+//translate([0,motorLength,0])
+//rotate([-90,0,0])
+//motor();
 
-translate([0,motorLength/2+motorLength-axleLength/2+wallThickness,0])
-axles();
+//translate([0,motorLength/2+motorLength-axleLength/2+wallThickness,0])
+//axles();
 
+chassis();
