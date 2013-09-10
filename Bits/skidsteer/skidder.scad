@@ -42,7 +42,9 @@ module chassis()
   triangles=[ [0,2,1],[1,2,3],[2,4,3],[3,4,5],          
               [4,6,5],[5,6,7],[6,8,7],[7,8,9],
 				  [8,10,9],[9,10,11],[10,0,11],
-					[11,0,1]]);
+					[11,0,1],
+					[0,4,2],[0,6,4],[0,8,6],[0,10,8],
+					[1,3,5],[1,5,7],[1,7,9],[1,9,11]]);
 	
 
 }
@@ -126,5 +128,8 @@ module axles()
 
 //translate([0,motorLength/2+motorLength-axleLength/2+wallThickness,0])
 //axles();
-
+difference()
+{
 chassis();
+motor();
+}
