@@ -1,5 +1,8 @@
 //Simple skid steer rc tank
 
+	//length of cylinder to be used as cutout for other bits
+	holeExtension=5;
+
 //Motor dimensions
 motorLength=68.3;
 motorDiameter=42.8;
@@ -8,45 +11,63 @@ motorShaftDiameter=5;
 
 //axle Dimensions
 axleDiameter=8;
-axleLength=55;
+axleLength=200;
 
 wallThickness=5;
 
 //chassis wheel points
-	width=30;
-
-	bottomFrontWheel=[100,0,-50];
-	bottomFrontWheel2=pointPlusWidth(bottomFrontWheel,width);
-	bottomBackWheel=[-100,0,-50];
-	bottomBackWheel2=pointPlusWidth(bottomBackWheel,width);
-	topFrontWheel=[150,0,0];
-	topFrontWheel2=pointPlusWidth(topFrontWheel,width);
-	topBackWheel=[-150,0,0];
-	topBackWheel2=pointPlusWidth(topBackWheel,width);
-	frontDriveIdler=[50,0,0];
-	frontDriveIdler2=pointPlusWidth(frontDriveIdler,width);
-	backDriveIdler=[-50,0,0];
-	backDriveIdler2=pointPlusWidth(backDriveIdler,width);
+	width=motorLength+holeExtension-.0001;
+	vehicleLength=200;
+	vehicleHeight=55;
+	topFrontWheel=[vehicleLength/2,0,0];
+	topBackWheel=[-vehicleLength/2,0,0];
 
 function pointPlusWidth(vec3,width)=[vec3[0],width,vec3[2]];
 function vec3ToVec2(vec3)=[vec3[0],vec3[2]];
 
-//chassis
-module chassis()
+//motor holder
+module motorHolder(cutout)
 {
+	//motor ventilation
+	airTubes=4;
+	boxHeight=50;
+	boxLength=20;
+	boxWidth=10;
 
-	polyhedron(
-  points=[ bottomFrontWheel,bottomFrontWheel2,topFrontWheel,topFrontWheel2, 
-           frontDriveIdler,frontDriveIdler2,backDriveIdler,backDriveIdler2,topBackWheel,
-			topBackWheel2,bottomBackWheel,bottomBackWheel2],                                 
-  triangles=[ [0,2,1],[1,2,3],[2,4,3],[3,4,5],          
-              [4,6,5],[5,6,7],[6,8,7],[7,8,9],
-				  [8,10,9],[9,10,11],[10,0,11],
-					[11,0,1],
-					[0,4,2],[0,6,4],[0,8,6],[0,10,8],
-					[1,3,5],[1,5,7],[1,7,9],[1,9,11]]);
+	//if using for cutout 
+	if(cutout)
+	{
+		translate([0,0,holeExtension/2])
+		cylinder(motorLength+holeExtension,motorDiameter/2+wallThickness,motorDiameter/2+wallThickness,true);
+	
+		//cutout for motor power wiring
+
+	
+		translate([0,-motorDiameter/2,-motorLength/2+boxWidth/2])
+		cube([boxLength,boxHeight,boxWidth],true);	
+	}
+
+	else
+	{
+
+
+		difference()
+		{
+
+			translate([0,0,holeExtension/2])
+			cylinder(motorLength+holeExtension,motorDiameter/2+wallThickness,motorDiameter/2+wallThickness,true);
 	
 
+			for ( i = [0 : 20 : 360] )
+			{
+				rotate([0,0,i])
+				translate([motorDiameter/2,0,0])
+				cylinder(motorLength,airTubes/2,airTubes/2,true);
+			}
+		
+			motor();
+		}
+	}
 }
 
 //Motor with geometry to allow mounting holes to be cutout
@@ -65,8 +86,7 @@ module motor()
 	holeCenters=25;
 	mountingHoles=6;
 	
-	//length of cylinder to be used as cutout for other bits
-	holeExtension=5;
+
 	
 	//mounting holes
 	for ( i = [0 : mountingHoles] )
@@ -94,42 +114,105 @@ module motor()
 module axles()
 {
 
+	difference()
+	{
+		difference()
+		{//chassis made from a couple of cylinders minus a couple of cubes
+			union()
+			{
+				translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
+				rotate([-90,0,0])
+				cylinder(width,vehicleLength/3,vehicleLength/3,true);
 
-	translate(bottomFrontWheel)
-	rotate([-90,0,0])
-	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+				translate([topBackWheel[0]/2,topBackWheel[1],topBackWheel[2]])
+				rotate([-90,0,0])
+				cylinder(width,vehicleLength/3,vehicleLength/3,true);
+				
+				translate([0,(motorLength+motorShaftLength)*1.5/2,0])
+				translate(topBackWheel)
+				rotate([-90,0,0])
+				cylinder((motorLength+motorShaftLength)*1.5,vehicleHeight/4,vehicleHeight/4,true);
 
-	translate(bottomBackWheel)
-	rotate([-90,0,0])
-	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+				translate([0,(motorLength+motorShaftLength)*1.5/2,0])
+				translate(topFrontWheel)
+				rotate([-90,0,0])
+				cylinder((motorLength+motorShaftLength)*1.5,vehicleHeight/4,vehicleHeight/4,true);
 
-	translate(topFrontWheel)
-	rotate([-90,0,0])
-	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
-	translate(topBackWheel)
-	rotate([-90,0,0])
-	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
-	translate(frontDriveIdler)
-	rotate([-90,0,0])
-	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+			}
+			translate([0,holeExtension/2,0])
+			rotate([-90,0,180])
+			motorHolder(true);
 
-	translate(backDriveIdler)
-	rotate([-90,0,0])
-	cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+			translate([0,0,vehicleLength/3/2+vehicleHeight/2])
+			cube([vehicleLength*2,width+1,vehicleLength/3],true);
+
+			translate([0,0,-(vehicleLength/3/2+vehicleHeight/2)])
+			cube([vehicleLength*2,width+1,vehicleLength/3],true);
+		}
+
+/*
+		translate(bottomFrontWheel)
+		rotate([-90,0,0])
+		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+
+		translate(bottomBackWheel)
+		rotate([-90,0,0])
+		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+*/
+
+		translate(topFrontWheel)
+		rotate([-90,0,0])
+		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+
+		translate(topBackWheel)
+		rotate([-90,0,0])
+		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+/*
+		translate(frontDriveIdler)
+		rotate([-90,0,0])
+		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+
+
+		translate(backDriveIdler)
+		rotate([-90,0,0])	
+		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
+*/		
+
+	}
+	translate([0,holeExtension/2,0])
+	rotate([-90,0,180])
+	motorHolder();
+
 
 }
 
 //motor spacing off center
-//translate([0,motorLength,0])
-//rotate([-90,0,0])
-//motor();
-
-//translate([0,motorLength/2+motorLength-axleLength/2+wallThickness,0])
-//axles();
-difference()
+//difference()
 {
-chassis();
-motor();
+//translate([0,-motorLength*1.5-wallThickness,0])
+//chassis();
+
+//translate([0,-motorLength,0])
+//rotate([-90,0,180])
+//{
+//motorHolder(true);
+//}
+//}
+
+//difference()
+//{
+
+//translate([0,-(motorLength/2+motorLength-width/2+wallThickness),0])
+axles();
+//motorHolder();
+//translate([0,-motorLength,0])
+//rotate([-90,0,180])
+{
+//motorHolder(true);
 }
+}
+//translate([0,-motorLength,0])
+
+				
