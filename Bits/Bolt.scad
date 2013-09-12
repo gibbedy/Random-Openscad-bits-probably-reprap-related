@@ -63,7 +63,7 @@ head_depth=4.8;
 
 //Bolt(diameter,length,head_size,head_depth);
 
-nut(5,3);
+Bolt(8,200,13,7);
 
 
 

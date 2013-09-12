@@ -1,3 +1,8 @@
+use <..\Bolt.scad>;
+//module Bolt(diameter,length,head_size,head_depth)
+
+use <..\Bearing.scad>;
+
 //Simple skid steer rc tank
 
 	//length of cylinder to be used as cutout for other bits
@@ -113,6 +118,16 @@ module motor()
 
 module axles()
 {
+	//dimensions for bolt to hold wheels on
+	boltLength=55;
+	boltDiameter=8;
+	boltHeadSize=13;
+	
+
+	//set for amount required to hold wheel on.. may parameterise this
+	boltOffset=20;
+
+	boltHeadDepth=width-boltLength+boltOffset;
 
 	difference()
 	{
@@ -128,17 +143,18 @@ module axles()
 				rotate([-90,0,0])
 				cylinder(width,vehicleLength/3,vehicleLength/3,true);
 				
-				translate([0,(motorLength+motorShaftLength)*1.5/2,0])
-				translate(topBackWheel)
-				rotate([-90,0,0])
-				cylinder((motorLength+motorShaftLength)*1.5,vehicleHeight/4,vehicleHeight/4,true);
 
-				translate([0,(motorLength+motorShaftLength)*1.5/2,0])
-				translate(topFrontWheel)
-				rotate([-90,0,0])
-				cylinder((motorLength+motorShaftLength)*1.5,vehicleHeight/4,vehicleHeight/4,true);
+				//translate([0,(motorLength+motorShaftLength)*1.5/2,0])
+				//translate(topBackWheel)
+				//rotate([-90,0,0])
+				//cylinder((motorLength+motorShaftLength)*1.5,vehicleHeight/4,vehicleHeight/4,true);
 
+				//translate([0,(motorLength+motorShaftLength)*1.5/2,0])
+				//translate(topFrontWheel)
+				//rotate([-90,0,0])
+				//cylinder((motorLength+motorShaftLength)*1.5,vehicleHeight/4,vehicleHeight/4,true);
 
+				
 
 			}
 			translate([0,holeExtension/2,0])
@@ -150,6 +166,8 @@ module axles()
 
 			translate([0,0,-(vehicleLength/3/2+vehicleHeight/2)])
 			cube([vehicleLength*2,width+1,vehicleLength/3],true);
+		
+
 		}
 
 /*
@@ -180,10 +198,26 @@ module axles()
 		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 */		
 
+	//bolt for backwheel to go on
+	translate(topBackWheel)
+	translate([0,boltLength/2+boltHeadDepth/2-(width-boltLength-boltHeadDepth)/2 -boltOffset,0])
+	rotate([90,0,0])
+	Bolt(boltDiameter,boltLength,boltHeadSize,boltHeadDepth);
+
+	//bolt for front wheel to go on
+	translate(topFrontWheel)
+	translate([0,boltLength/2+boltHeadDepth/2-(width-boltLength-boltHeadDepth)/2 -boltOffset,0])
+	rotate([90,0,0])
+	Bolt(boltDiameter,boltLength,boltHeadSize,boltHeadDepth);
+
+
 	}
 	translate([0,holeExtension/2,0])
 	rotate([-90,0,180])
 	motorHolder();
+
+
+
 
 
 }
@@ -216,3 +250,5 @@ axles();
 //translate([0,-motorLength,0])
 
 				
+
+		
