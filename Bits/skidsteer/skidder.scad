@@ -1,7 +1,20 @@
+use <..\Bearing.scad>;
 use <..\Bolt.scad>;
 //module Bolt(diameter,length,head_size,head_depth)
 
-use <..\Bearing.scad>;
+	//dimensions for bolt to hold wheels on
+	boltLength=55;
+	boltDiameter=8.5;
+	boltHeadSize=13.25;
+	
+
+	//set for amount required to hold wheel on.. may parameterise this
+	boltOffset=20;
+
+
+
+
+
 
 //Simple skid steer rc tank
 
@@ -10,22 +23,23 @@ use <..\Bearing.scad>;
 
 //Motor dimensions
 motorLength=68.3;
-motorDiameter=42.8;
+motorDiameter=43;
 motorShaftLength=17;
 motorShaftDiameter=5;
 
-//axle Dimensions
-axleDiameter=8;
-axleLength=200;
 
 wallThickness=5;
 
 //chassis wheel points
-	width=motorLength+holeExtension-.0001;
-	vehicleLength=200;
+   //width=motorLength+holeExtension-.0001;
+	width=wallThickness;
+	vehicleLength=150;
 	vehicleHeight=55;
 	topFrontWheel=[vehicleLength/2,0,0];
 	topBackWheel=[-vehicleLength/2,0,0];
+
+	boltHeadDepth=width-boltLength+boltOffset;
+
 
 function pointPlusWidth(vec3,width)=[vec3[0],width,vec3[2]];
 function vec3ToVec2(vec3)=[vec3[0],vec3[2]];
@@ -116,69 +130,131 @@ module motor()
 	cube([boxLength,boxHeight,boxWidth],true);	
 }
 
-module axles()
+//main body of vehicle
+module chassisMain()
 {
-	//dimensions for bolt to hold wheels on
-	boltLength=55;
-	boltDiameter=8;
-	boltHeadSize=13;
+
+		difference()
+		{//chassis made from a couple of cylinders minus a couple of cubes
+
+			difference()
+			{
+				intersection()
+				{
+					cube([vehicleLength*2,vehicleLength,vehicleHeight],true);
+					union()
+					{
+						translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
+						rotate([-90,0,0])
+						cylinder(vehicleLength,vehicleLength/3,vehicleLength/3,true);
+
+						translate([topBackWheel[0]/2,topBackWheel[1],topBackWheel[2]])
+						rotate([-90,0,0])
+						cylinder(vehicleLength,vehicleLength/3,vehicleLength/3,true);
+
+					}
+				}
+			}
+			difference()
+			{
+				intersection()
+				{
+					cube([vehicleLength*2,vehicleLength+.0001,vehicleHeight-2*wallThickness],true);
+					union()
+					{
+						translate([topFrontWheel[0]/3,topFrontWheel[1],topFrontWheel[2]])
+						rotate([-90,0,0])
+						cylinder(vehicleLength+.0001,vehicleLength/2.7,vehicleLength/2.7,true);
+
+						translate([topBackWheel[0]/3,topBackWheel[1],topBackWheel[2]])
+						rotate([-90,0,0])
+						cylinder(vehicleLength+.0001,vehicleLength/2.7,vehicleLength/2.7,true);
+
+					}
+				}
+			}
+			
+		}//END chassis made from a couple of cylinders minus a couple of cubes
+
+
+		difference()
+		{
+			//shaft for backwheel to go on
+			translate(topBackWheel)
+			rotate([90,0,0])
+			cylinder(vehicleLength,boltDiameter,boltDiameter,true);
+		
+			translate(topBackWheel)
+			rotate([90,0,0])
+			cylinder(vehicleLength,boltDiameter/2,boltDiameter/2,true);
+		}
+
+		difference()
+		{
+			//shaft for front wheel to go on
+			translate(topFrontWheel)
+			rotate([90,0,0])
+			cylinder(vehicleLength,boltDiameter,boltDiameter,true);
+		
+			translate(topFrontWheel)
+			rotate([90,0,0])
+			cylinder(vehicleLength,boltDiameter/2,boltDiameter/2,true);
+		}
+
+
 	
 
-	//set for amount required to hold wheel on.. may parameterise this
-	boltOffset=20;
+}
+module axles()
+{
 
-	boltHeadDepth=width-boltLength+boltOffset;
 
 	difference()
 	{
 		difference()
 		{//chassis made from a couple of cylinders minus a couple of cubes
-			union()
+			intersection()
 			{
-				translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
-				rotate([-90,0,0])
-				cylinder(width,vehicleLength/3,vehicleLength/3,true);
+				cube([vehicleLength*2,width,vehicleHeight],true);
+				union()
+				{
+					translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
+					rotate([-90,0,0])
+					cylinder(width,vehicleLength/3,vehicleLength/3,true);
 
-				translate([topBackWheel[0]/2,topBackWheel[1],topBackWheel[2]])
-				rotate([-90,0,0])
-				cylinder(width,vehicleLength/3,vehicleLength/3,true);
-				
+					translate([topBackWheel[0]/2,topBackWheel[1],topBackWheel[2]])
+					rotate([-90,0,0])
+					cylinder(width,vehicleLength/3,vehicleLength/3,true);
 
-				//translate([0,(motorLength+motorShaftLength)*1.5/2,0])
-				//translate(topBackWheel)
-				//rotate([-90,0,0])
-				//cylinder((motorLength+motorShaftLength)*1.5,vehicleHeight/4,vehicleHeight/4,true);
-
-				//translate([0,(motorLength+motorShaftLength)*1.5/2,0])
-				//translate(topFrontWheel)
-				//rotate([-90,0,0])
-				//cylinder((motorLength+motorShaftLength)*1.5,vehicleHeight/4,vehicleHeight/4,true);
-
-				
-
+				}
 			}
+	
+			//cutout for motor holder
 			translate([0,holeExtension/2,0])
 			rotate([-90,0,180])
 			motorHolder(true);
+			
 
-			translate([0,0,vehicleLength/3/2+vehicleHeight/2])
-			cube([vehicleLength*2,width+1,vehicleLength/3],true);
 
-			translate([0,0,-(vehicleLength/3/2+vehicleHeight/2)])
-			cube([vehicleLength*2,width+1,vehicleLength/3],true);
-		
+			//cutout to save on plastic
+			translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
+			rotate([-90,0,0])
+			cylinder(width,
+			min(vehicleHeight/2-wallThickness,(
+			topFrontWheel[0]-boltDiameter/2-motorDiameter/2-wallThickness*3)/2),
+			min(vehicleHeight/2-wallThickness,
+			(topFrontWheel[0]-boltDiameter/2-motorDiameter/2-wallThickness*3)/2),true);
 
+
+			//cutout to save on plastic
+			translate([topBackWheel[0]/2,topBackWheel[1],topBackWheel[2]])
+			rotate([-90,0,0])
+			cylinder(width,
+			min(vehicleHeight/2-wallThickness,(
+			-topBackWheel[0]-boltDiameter/2-motorDiameter/2-wallThickness*3)/2),
+			min(vehicleHeight/2-wallThickness,
+			(-topBackWheel[0]-boltDiameter/2-motorDiameter/2-wallThickness*3)/2),true);
 		}
-
-/*
-		translate(bottomFrontWheel)
-		rotate([-90,0,0])
-		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
-
-		translate(bottomBackWheel)
-		rotate([-90,0,0])
-		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
-*/
 
 		translate(topFrontWheel)
 		rotate([-90,0,0])
@@ -187,44 +263,28 @@ module axles()
 		translate(topBackWheel)
 		rotate([-90,0,0])
 		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
-/*
-		translate(frontDriveIdler)
-		rotate([-90,0,0])
-		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
 
+		//bolt for backwheel to go on
+		translate(topBackWheel)
+		translate([0,boltLength/2+boltHeadDepth/2-(width-boltLength-boltHeadDepth)/2 -boltOffset,0])
+		rotate([90,0,0])
+		Bolt(boltDiameter,boltLength,boltHeadSize,boltHeadDepth);
 
-		translate(backDriveIdler)
-		rotate([-90,0,0])	
-		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
-*/		
-
-	//bolt for backwheel to go on
-	translate(topBackWheel)
-	translate([0,boltLength/2+boltHeadDepth/2-(width-boltLength-boltHeadDepth)/2 -boltOffset,0])
-	rotate([90,0,0])
-	Bolt(boltDiameter,boltLength,boltHeadSize,boltHeadDepth);
-
-	//bolt for front wheel to go on
-	translate(topFrontWheel)
-	translate([0,boltLength/2+boltHeadDepth/2-(width-boltLength-boltHeadDepth)/2 -boltOffset,0])
-	rotate([90,0,0])
-	Bolt(boltDiameter,boltLength,boltHeadSize,boltHeadDepth);
-
+		//bolt for front wheel to go on
+		translate(topFrontWheel)	
+		translate([0,boltLength/2+boltHeadDepth/2-(width-boltLength-boltHeadDepth)/2 -boltOffset,0])
+		rotate([90,0,0])
+		Bolt(boltDiameter,boltLength,boltHeadSize,boltHeadDepth);
 
 	}
-	translate([0,holeExtension/2,0])
+	translate([0,(motorLength+holeExtension-width)/2+holeExtension/2,0])
 	rotate([-90,0,180])
 	motorHolder();
-
-
-
-
-
 }
 
 //motor spacing off center
 //difference()
-{
+
 //translate([0,-motorLength*1.5-wallThickness,0])
 //chassis();
 
@@ -239,16 +299,49 @@ module axles()
 //{
 
 //translate([0,-(motorLength/2+motorLength-width/2+wallThickness),0])
-axles();
+//rotate([90,0,0])
+//axles();
 //motorHolder();
 //translate([0,-motorLength,0])
 //rotate([-90,0,180])
-{
+//chassisMain();
 //motorHolder(true);
-}
-}
+chassisBase();
+chassisLid();
+
 //translate([0,-motorLength,0])
 
-				
-
+module chassisBase()
+{
+	difference()
+	{
+	
+		chassisMain();		
+		translate([topBackWheel[0],topBackWheel[1],topBackWheel[2]+vehicleHeight/2])
+		{
+			rotate([90,0,0])
+			cylinder(vehicleLength*3/4,(vehicleHeight+boltDiameter*2)/2+4,(vehicleHeight+boltDiameter*2)/2+4,true);
+			//cube([vehicleLength/2,3/4*vehicleLength,vehicleHeight+boltDiameter*2],true);
+			cube([vehicleLength*3,3/4*vehicleLength,vehicleHeight-boltDiameter*2],true);
+		}
 		
+	}
+}
+
+module chassisLid()
+{
+	intersection()
+	{
+	
+		chassisMain();		
+		translate([topBackWheel[0],topBackWheel[1],topBackWheel[2]+vehicleHeight/2])
+		{
+			rotate([90,0,0])
+			cylinder(vehicleLength*3/4,(vehicleHeight+boltDiameter*2)/2,(vehicleHeight+boltDiameter*2)/2,true);
+			//cube([vehicleLength/2,3/4*vehicleLength,vehicleHeight+boltDiameter*2],true);
+			cube([vehicleLength*3,3/4*vehicleLength,vehicleHeight-boltDiameter*2],true);
+		}
+		
+	}
+
+}
