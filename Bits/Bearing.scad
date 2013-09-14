@@ -59,7 +59,12 @@ width=5;
 
 bearing(ext_Diameter,int_Diameter,width);
 
-
+//used to provide usage info 
+module Bearing_Info()
+{
+	echo("Usage: bearing(External Diameter, Internal Diameter, Width)");
+	echo("       bearingExternalGeom(External Diameter,Width)");
+}
 
 
 

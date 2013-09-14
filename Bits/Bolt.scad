@@ -66,4 +66,12 @@ head_depth=4.8;
 Bolt(8,200,13,7);
 
 
+module BoltInfo()
+{
+	echo("Usage Bolt(Diameter of bolt,length,head size (flat edge to flat edge),depth of head)");
+	echo("		nut(nut size,nut depth)");
+	echo("		Typical nut sizes:  3mm = 6mm accross");
+
+}
+
 
