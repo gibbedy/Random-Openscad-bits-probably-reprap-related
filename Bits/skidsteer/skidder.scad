@@ -1,7 +1,7 @@
 use <..\Bearing.scad>;
 use <..\Bolt.scad>;
 
-//$fn=100;
+$fn=50;
 //layer height used
 layerHeight=.3;
 //module Bolt(diameter,length,head_size,head_depth)
@@ -534,43 +534,138 @@ motor();
 //axles();
 //motor();
 //motorHolder();
+rotate([90,0,0])
 tankTrack();
+
+//translate([pitch/2,pitch*2,0])
+//tankSprocket();
+
+
+
+
+	//used to experiment to get max strength with minimal plastic
+	trackWallThickness=5;
+
+	//pla rivet
+	pinDiameter=3.5;
+
+	rollerDiameter=8;
+	rollerWidth=20;
+	pitch=25;
+	sprocketThickness=rollerWidth-1;
+	padWidth=rollerWidth+trackWallThickness*2;
+	//may experiment with changing padThickness later
+	padThickness=rollerDiameter;
+	
+	sprocketTeethHeight=rollerDiameter;
+	sprocketDiameter=vehicleHeight+10;
+	//number of sprocket teeth
+	teeth=11;
+	//tolerence for sprocket
+	tolerence=.3;
+	toothWidth=5;
 
 module tankTrack()
 {
-	//used to experiment to get max strength with minimal plastic
-	wallThickness=5;
 
-	rollerDiameter=5;
-	rollerWidth=20;
-	pitch=20;
-	sprocketThickness=rollerWidth-1;
-	padWidth=rollerWidth+wallThickness*2;
-
-	//first Roller
-	cylinder(rollerWidth,rollerDiameter/2,rollerDiameter/2,true);
-
-	//second roller (part of next link) not sure what i'm doing yet
-	translate([pitch,0,0])
+	//create pad first with a few bits then cutout pin holes from result
 	difference()
 	{
-		cylinder(padWidth,rollerDiameter/2,rollerDiameter/2,true);
-		cylinder(rollerWidth,rollerDiameter/2,rollerDiameter/2,true);
-	}
+		union()
+		{
+			//first Roller
+			cylinder(rollerWidth,rollerDiameter/2,rollerDiameter/2,true);
+
+			//second roller (part of next link) not sure what i'm doing yet
+			translate([pitch,0,0])
+			difference()	
+			{
+				cylinder(padWidth,rollerDiameter/2,rollerDiameter/2,true);
+				cylinder(rollerWidth,rollerDiameter/2,rollerDiameter/2,true);
+			}
 	
-	//main part of pad
-	difference()
-	{
-		translate([pitch/2,0,0])
-		cube([pitch,rollerDiameter,padWidth],true);
+			//main part of pad
+			difference()
+			{
+				translate([pitch/2,0,0])
+				cube([pitch,padThickness,padWidth],true);
 	
-		//minus bit to allow links to flex
+				//minus bit to allow links to flex
+				difference()
+				{
+					cube([rollerDiameter,padThickness,padWidth],true);
+					cube([rollerDiameter,padThickness,rollerWidth],true);
+				}
+				translate([pitch,0,0])
+				cube([rollerDiameter,padThickness,rollerWidth],true);	
+			}
+		}
+
+		//cutout for sprocket
+	
 		difference()
 		{
-			cube([rollerDiameter,rollerDiameter,padWidth],true);
+			//cube centerd on pad to cut stuff away from
+			translate([pitch/2,0,0])
+			cube([pitch-2*rollerDiameter,padThickness,rollerWidth],true);
 
+			union()
+			{
+
+				//first Roller
+				cylinder(rollerWidth,pitch/2-toothWidth/2,pitch/2-toothWidth/2,true);
+
+				//second roller (part of next link) not sure what i'm doing yet
+				translate([pitch,0,0])
+				cylinder(rollerWidth,pitch/2-toothWidth/2,pitch/2-toothWidth/2,true);	
+
+			}
+		}
+			
+
+		
+
+		//pin holes to cut out
+		cylinder(rollerWidth,pinDiameter/2,pinDiameter/2,true);
+	
+		//second roller (part of next link) not sure what i'm doing yet
+		translate([pitch,0,0])
+		cylinder(padWidth,pinDiameter/2,pinDiameter/2,true);
+		}
+}//end module tankTrack
+
+module tankSprocket()
+{
+
+
+
+	toothAngle=360/teeth;
+	pitchRadius=pitch/sin(toothAngle);
+echo("sprocket Diameter is: ",pitchRadius);
+echo("making circumference: ",2*3.14*pitchRadius);
+echo("making pitch equal to: ",(2*3.14*pitchRadius)/teeth);
+
+	cylinder(sprocketThickness,pitchRadius,pitchRadius,true);	
+
+//sprocketTeeth
+	for ( i = [0 : teeth] )
+	{
+   	rotate( i * toothAngle,[0, 0, 1])
+		translate([pitchRadius,0,0])
+		{
+			//flatten top if tooth profile is going to extend past track
+			difference()
+			{
+			cylinder(sprocketThickness,toothWidth/2-tolerence,toothWidth/2-tolerence,true);
+			translate([toothWidth/2+padThickness,0,0])
+			cube([toothWidth,toothWidth,toothWidth],true);
+			}
+			
 		}
 	}
 
-}//end module tankTrack
+
+}//end tankSprocket
+
+
 
