@@ -1,8 +1,9 @@
 use <..\Bearing.scad>;
 use <..\Bolt.scad>;
 
-//$fn=50;
-
+//$fn=100;
+//layer height used
+layerHeight=.3;
 //module Bolt(diameter,length,head_size,head_depth)
 
 	//dimensions for bolt to hold wheels on
@@ -26,7 +27,7 @@ use <..\Bolt.scad>;
 
 //Motor dimensions
 motorLength=68.3;
-motorDiameter=43;
+motorDiameter=44;
 motorShaftLength=17;
 motorShaftDiameter=5.5;
 
@@ -59,8 +60,8 @@ module motorHolder(cutout)
 	//if using for cutout 
 	if(cutout)
 	{
-		translate([0,0,holeExtension/2])
-		cylinder(motorLength+holeExtension,motorDiameter/2+wallThickness,motorDiameter/2+wallThickness,true);
+		translate([0,0,width/2])
+		cylinder(motorLength+width,motorDiameter/2+wallThickness,motorDiameter/2+wallThickness,true);
 	
 		//cutout for motor power wiring
 
@@ -76,10 +77,16 @@ module motorHolder(cutout)
 		difference()
 		{
 
-			translate([0,0,holeExtension/2])
-			cylinder(motorLength+holeExtension,motorDiameter/2+wallThickness,motorDiameter/2+wallThickness,true);
-	
+			translate([0,0,width/2])
+			//full length motor holder has been commented for now
+			//cylinder(motorLength+width,motorDiameter/2+wallThickness,motorDiameter/2+wallThickness,true);
+		
+			//and replaced with the following two lines
+			translate([0,0,(motorLength+width)/2-(width*3)/2])
+			cylinder(width*3,motorDiameter/2+wallThickness,motorDiameter/2+wallThickness,true);
+			//
 
+			//ribbs for air flow and ease of motor installation
 			for ( i = [0 : 20 : 360] )
 			{
 				rotate([0,0,i])
@@ -107,22 +114,29 @@ module motor()
 	holeDiameter=4;
 	holeCenters=25;
 	mountingHoles=6;
-	
-
+	//how far to countersink screw
+	screwHeadDepth=3;
+	screwHeadDiameter=6;
 	
 	//mounting holes
 	for ( i = [0 : mountingHoles] )
 	{
    	rotate( i * 360 / mountingHoles,[0, 0, 1])
-		translate([holeCenters/2,0,motorLength/2+holeExtension/2])
-		cylinder(holeExtension,holeDiameter/2,holeDiameter/2,true);
+		translate([holeCenters/2,0,motorLength/2])
+		{
+			cylinder(width-screwHeadDepth,holeDiameter/2,holeDiameter/2);
+			//bit to countersink screw
+			//layerHeight used here to provide bridge for screw hole support
+			translate([0,0,width-screwHeadDepth+layerHeight])
+			cylinder(screwHeadDepth,screwHeadDiameter/2,screwHeadDiameter/2);
+		}
 	}
 
 	//center hole for shaft and possibly gear (used for cutout)
 	shaftBaseCutout=15;
 
-	translate([0,0,motorLength/2+holeExtension/2])
-	cylinder(holeExtension,shaftBaseCutout/2,shaftBaseCutout/2,true);
+	translate([0,0,motorLength/2+width/2])
+	cylinder(width,shaftBaseCutout/2,shaftBaseCutout/2,true);
 
 	//cutout for motor power wiring
 	boxHeight=10;
@@ -144,7 +158,7 @@ module chassisMain()
 			{
 				intersection()
 				{
-					cube([vehicleLength*2,vehicleLength,vehicleHeight],true);
+					cube([vehicleLength*2,vehicleLength,vehicleHeight+2*wallThickness],true);
 					union()
 					{
 						translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
@@ -158,24 +172,24 @@ module chassisMain()
 					}
 				}
 			}
-			difference()
+
+			
+			intersection()
 			{
-				intersection()
+				cube([vehicleLength*2,vehicleLength+.0001,vehicleHeight],true);
+				union()
 				{
-					cube([vehicleLength*2,vehicleLength+.0001,vehicleHeight-2*wallThickness],true);
-					union()
-					{
-						translate([topFrontWheel[0]/3,topFrontWheel[1],topFrontWheel[2]])
-						rotate([-90,0,0])
-						cylinder(vehicleLength+.0001,vehicleLength/2.7,vehicleLength/2.7,true);
+					translate([topFrontWheel[0]/3,topFrontWheel[1],topFrontWheel[2]])
+					rotate([-90,0,0])
+					cylinder(vehicleLength+.0001,vehicleLength/2.7,vehicleLength/2.7,true);
 
-						translate([topBackWheel[0]/3,topBackWheel[1],topBackWheel[2]])
-						rotate([-90,0,0])
-						cylinder(vehicleLength+.0001,vehicleLength/2.7,vehicleLength/2.7,true);
+					translate([topBackWheel[0]/3,topBackWheel[1],topBackWheel[2]])
+					rotate([-90,0,0])
+					cylinder(vehicleLength+.0001,vehicleLength/2.7,vehicleLength/2.7,true);
 
-					}
 				}
 			}
+			
 			
 		}//END chassis made from a couple of cylinders minus a couple of cubes
 
@@ -216,22 +230,34 @@ module axles()
 	{
 		difference()
 		{//chassis made from a couple of cylinders minus a couple of cubes
-			intersection()
+			union()
 			{
-				cube([vehicleLength*2,width,vehicleHeight],true);
-				union()
+				intersection()
 				{
-					translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
-					rotate([-90,0,0])
-					cylinder(width,vehicleLength/3,vehicleLength/3,true);
+					cube([vehicleLength*2,width,vehicleHeight],true);
+					union()
+					{
+						translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
+						rotate([-90,0,0])
+						cylinder(width,vehicleLength/3,vehicleLength/3,true);
 
-					translate([topBackWheel[0]/2,topBackWheel[1],topBackWheel[2]])
-					rotate([-90,0,0])
-					cylinder(width,vehicleLength/3,vehicleLength/3,true);
+						translate([topBackWheel[0]/2,topBackWheel[1],topBackWheel[2]])
+						rotate([-90,0,0])	
+						cylinder(width,vehicleLength/3,vehicleLength/3,true);
 
+					}
 				}
+			//support to keep axle square LHS
+			translate([topBackWheel[0],topBackWheel[1]-width/2,topBackWheel[2]])
+			rotate([-90,0,0])
+			cylinder(width*3,boltDiameter,boltDiameter);
+
+			//support to keep axle square RHS
+			translate([topFrontWheel[0],topFrontWheel[1]-width/2,topFrontWheel[2]])
+			rotate([-90,0,0])
+			cylinder(width*3,boltDiameter,boltDiameter);
 			}
-	
+
 			//cutout for motor holder
 			translate([0,holeExtension/2,0])
 			rotate([-90,0,180])
@@ -259,14 +285,6 @@ module axles()
 			(-topBackWheel[0]-boltDiameter/2-motorDiameter/2-wallThickness*3)/2),true);
 		}
 
-		translate(topFrontWheel)
-		rotate([-90,0,0])
-		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
-
-		translate(topBackWheel)
-		rotate([-90,0,0])
-		cylinder(axleLength,axleDiameter/2,axleDiameter/2,true);
-
 		//bolt for backwheel to go on
 		translate(topBackWheel)
 		translate([0,boltLength/2+boltHeadDepth/2-(width-boltLength-boltHeadDepth)/2 -boltOffset,0])
@@ -280,6 +298,9 @@ module axles()
 		Bolt(boltDiameter,boltLength,boltHeadSize,boltHeadDepth);
 
 	}
+
+
+
 	translate([0,(motorLength+holeExtension-width)/2+holeExtension/2,0])
 	rotate([-90,0,180])
 	motorHolder();
@@ -382,10 +403,16 @@ module bigGear()
 		}
 	}
 
-	//1mm washer for gear
+	//1.5mm washer for gear
 	difference()
 	{
-		cylinder(1.5,(boltDiameter+3)/2,(boltDiameter+3)/2);
+		union()
+		{
+			//top bit
+			cylinder(1.5,(boltDiameter+3)/2,(boltDiameter+3)/2);
+			//bottom bit
+			cylinder(1,(22.5-3)/2,(22.5-3)/2);
+		}
 		cylinder(1.5,boltDiameter/2,boltDiameter/2);
 	}
 }
@@ -437,22 +464,113 @@ module littleGear()
 }
 
 
-//put it together for viewing
 /*
+//put it together for viewing
+//front Right big gear
 translate([0,(-vehicleLength/2),0])
 translate(topFrontWheel)
 rotate([90,0,0])
 bigGear();
 
+//back right big gear
 translate([0,(-vehicleLength/2),0])
-//translate(topFrontWheel)
+translate(topBackWheel)
 rotate([90,0,0])
-littleGear();
-chassisBase();
-*/
+bigGear();
 
+//front Left big gear
+translate([0,(vehicleLength/2),0])
+translate(topFrontWheel)
+rotate([-90,0,0])
+bigGear();
+
+//back left big gear
+translate([0,(vehicleLength/2),0])
+translate(topBackWheel)
+rotate([-90,0,0])
 bigGear();
 
 
+//Right little drive gear
+translate([0,(-vehicleLength/2),0])
+rotate([90,0,0])
+littleGear();
 
+
+//left little drive gear
+translate([0,(vehicleLength/2),0])
+rotate([-90,0,0])
+littleGear();
+
+//Right side 
+translate([0,-(vehicleLength/2-width/2),0])
+
+axles();
+
+//Left side
+translate([0,(vehicleLength/2-width/2),0])
+rotate([0,0,180])
+axles();
+
+//lid
+translate([-vehicleLength/2,0,vehicleLength/2])
+rotate([0,-90,0])
+chassisLid();
+
+//motor RHS
+translate([0,-(vehicleLength/2-motorLength/2-width),0])
+rotate([90,180,0])
+motor();
+
+//motor LHS
+translate([0,(vehicleLength/2-motorLength/2-width),0])
+rotate([-90,0,0])
+motor();
+*/
+
+//chassisBase();
+//bigGear();
+//rotate([90,0,0])
+//axles();
+//motor();
+//motorHolder();
+tankTrack();
+
+module tankTrack()
+{
+	//used to experiment to get max strength with minimal plastic
+	wallThickness=5;
+
+	rollerDiameter=5;
+	rollerWidth=20;
+	pitch=20;
+	sprocketThickness=rollerWidth-1;
+	padWidth=rollerWidth+wallThickness*2;
+
+	//first Roller
+	cylinder(rollerWidth,rollerDiameter/2,rollerDiameter/2,true);
+
+	//second roller (part of next link) not sure what i'm doing yet
+	translate([pitch,0,0])
+	difference()
+	{
+		cylinder(padWidth,rollerDiameter/2,rollerDiameter/2,true);
+		cylinder(rollerWidth,rollerDiameter/2,rollerDiameter/2,true);
+	}
+	
+	//main part of pad
+	difference()
+	{
+		translate([pitch/2,0,0])
+		cube([pitch,rollerDiameter,padWidth],true);
+	
+		//minus bit to allow links to flex
+		difference()
+		{
+			cube([rollerDiameter,rollerDiameter,padWidth],true);
+
+		}
+	}
+
+}//end module tankTrack
 
