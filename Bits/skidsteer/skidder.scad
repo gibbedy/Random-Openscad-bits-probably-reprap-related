@@ -1,7 +1,7 @@
 use <..\Bearing.scad>;
 use <..\Bolt.scad>;
 
-$fn=50;
+//$fn=50;
 
 //module Bolt(diameter,length,head_size,head_depth)
 
@@ -362,15 +362,15 @@ module bigGear()
 			import (file = "bigGear.dxf");
 
 			//bearing holder
-			cylinder(10,14,14);
+			cylinder(8,14,14);
 		}
 
 		//bearing cutout
-		translate([0,0,7/2+10-7])
+		translate([0,0,7/2+8-7])
 		bearingExternalGeom(22.5,7);
 	
 		//axle cutout
-		cylinder(10,(22.5-2)/2,(22.5-2)/2);
+		cylinder(8,(22.5-2)/2,(22.5-2)/2);
 
 
 
@@ -385,57 +385,74 @@ module bigGear()
 	//1mm washer for gear
 	difference()
 	{
-		cylinder(1,(boltDiameter+3)/2,(boltDiameter+3)/2);
-		cylinder(1,boltDiameter/2,boltDiameter/2);
+		cylinder(1.5,(boltDiameter+3)/2,(boltDiameter+3)/2);
+		cylinder(1.5,boltDiameter/2,boltDiameter/2);
 	}
 }
-littleGear();
+
 
 module littleGear()
 {
-
-
-difference()
-{
-	union()
-	{
-		//import gear geometry from gearotic
-		translate([0,0,wallThickness/2])
-		linear_extrude(height=wallThickness,center=true,convexity=10)
-		import (file = "pinion-2D2.dxf");
-	
-		//cylinder for meat of gear	
-		cylinder(motorShaftLength-wallThickness,15/2,15/2);
-	
-		translate([0,8/2,(motorShaftLength-wallThickness)/2])
-		cube([15,8,motorShaftLength-wallThickness],true);
-	}
-
-	//shaft for cutout
 	difference()
 	{
-		//-wallThickness because of motor offset position
-		cylinder(motorShaftLength-wallThickness,motorShaftDiameter/2,motorShaftDiameter/2);
-		//sqare shaft
-		translate([0,motorShaftDiameter/2,motorShaftLength/2])
-		cube([motorShaftDiameter,1,motorShaftLength],true);
-	}
-	
-	//3mm nut cutout
-	translate([0,motorShaftDiameter/2+3/2-1,wallThickness+3])
-	{
-		//cube to make shaft to insert grub screw nut
-		translate([0,0,10/2])
-		cube([7,3,10],true);
-		//cylinder for meat of gear
-		rotate([90,0,0])
+		union()
 		{
-		nut(6,3);
-		translate([0,0,-20/2])
-		cylinder(20,1.75,1.75,true);
+			//import gear geometry from gearotic
+			translate([0,0,wallThickness/2])
+			linear_extrude(height=wallThickness,center=true,convexity=10)
+			import (file = "pinion-2D2.dxf");
+	
+			//cylinder for meat of gear	
+			cylinder(motorShaftLength-wallThickness,15/2,15/2);
+	
+			translate([0,8/2,(motorShaftLength-wallThickness)/2])
+			cube([15,8,motorShaftLength-wallThickness],true);
+		}
+
+		//shaft for cutout
+		difference()
+		{
+			//-wallThickness because of motor offset position
+			cylinder(motorShaftLength-wallThickness,motorShaftDiameter/2,motorShaftDiameter/2);
+			//sqare shaft
+			translate([0,motorShaftDiameter/2,motorShaftLength/2])
+			cube([motorShaftDiameter,1,motorShaftLength],true);
+		}
+	
+		//3mm nut cutout
+		translate([0,motorShaftDiameter/2+3/2-1,wallThickness+3])
+		{
+			//cube to make shaft to insert grub screw nut
+			translate([0,0,10/2])
+			cube([7,3,10],true);
+			//cylinder for meat of gear
+			rotate([90,0,0])
+			{
+				nut(6,3);
+			translate([0,0,-20/2])
+			cylinder(20,1.75,1.75,true);
+			}
 		}
 	}
 }
 
-}
+
+//put it together for viewing
+/*
+translate([0,(-vehicleLength/2),0])
+translate(topFrontWheel)
+rotate([90,0,0])
+bigGear();
+
+translate([0,(-vehicleLength/2),0])
+//translate(topFrontWheel)
+rotate([90,0,0])
+littleGear();
+chassisBase();
+*/
+
+bigGear();
+
+
+
 
