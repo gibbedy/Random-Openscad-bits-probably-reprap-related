@@ -534,11 +534,11 @@ motor();
 //axles();
 //motor();
 //motorHolder();
-rotate([90,0,0])
-tankTrack();
+//rotate([90,0,0])
+//tankTrack();
 
 //translate([pitch/2,pitch*2,0])
-//tankSprocket();
+tankSprocket();
 
 
 
@@ -551,7 +551,7 @@ tankTrack();
 
 	rollerDiameter=8;
 	rollerWidth=20;
-	pitch=25;
+	pitch=20;
 	sprocketThickness=rollerWidth-1;
 	padWidth=rollerWidth+trackWallThickness*2;
 	//may experiment with changing padThickness later
@@ -560,10 +560,11 @@ tankTrack();
 	sprocketTeethHeight=rollerDiameter;
 	sprocketDiameter=vehicleHeight+10;
 	//number of sprocket teeth
-	teeth=11;
+	teeth=10;
 	//tolerence for sprocket
 	tolerence=.3;
-	toothWidth=5;
+	toothWidth=min(5,pitch-2*rollerDiameter);
+	echo("toothwidth:",toothWidth);
 
 module tankTrack()
 {
@@ -581,7 +582,7 @@ module tankTrack()
 			difference()	
 			{
 				cylinder(padWidth,rollerDiameter/2,rollerDiameter/2,true);
-				cylinder(rollerWidth,rollerDiameter/2,rollerDiameter/2,true);
+				cylinder(rollerWidth+tolerence,rollerDiameter/2,rollerDiameter/2,true);
 			}
 	
 			//main part of pad
@@ -593,11 +594,11 @@ module tankTrack()
 				//minus bit to allow links to flex
 				difference()
 				{
-					cube([rollerDiameter,padThickness,padWidth],true);
-					cube([rollerDiameter,padThickness,rollerWidth],true);
+					cube([rollerDiameter+tolerence,padThickness,padWidth],true);
+					cube([rollerDiameter+tolerence,padThickness,rollerWidth],true);
 				}
 				translate([pitch,0,0])
-				cube([rollerDiameter,padThickness,rollerWidth],true);	
+				cube([rollerDiameter+tolerence,padThickness,rollerWidth+tolerence],true);	
 			}
 		}
 
@@ -640,12 +641,19 @@ module tankSprocket()
 
 
 	toothAngle=360/teeth;
-	pitchRadius=pitch/sin(toothAngle);
-echo("sprocket Diameter is: ",pitchRadius);
-echo("making circumference: ",2*3.14*pitchRadius);
-echo("making pitch equal to: ",(2*3.14*pitchRadius)/teeth);
-
-	cylinder(sprocketThickness,pitchRadius,pitchRadius,true);	
+//	pitchRadius=pitch/sin(toothAngle);
+	circumference=teeth*pitch;
+	pitchRadius=circumference/(2*PI);
+echo("sprocket Radius is: ",pitchRadius);
+echo("making circumference: ",2*PI*pitchRadius);
+echo("making pitch equal to: ",(2*PI*pitchRadius)/teeth);
+	difference()
+	{
+		cylinder(sprocketThickness,pitchRadius,pitchRadius,true);
+		cylinder(sprocketThickness,15,15,true);	
+		translate([0,0,wallThickness/2])
+		cylinder(sprocketThickness,pitchRadius-wallThickness,pitchRadius-wallThickness,true);
+	}
 
 //sprocketTeeth
 	for ( i = [0 : teeth] )
@@ -654,11 +662,14 @@ echo("making pitch equal to: ",(2*3.14*pitchRadius)/teeth);
 		translate([pitchRadius,0,0])
 		{
 			//flatten top if tooth profile is going to extend past track
-			difference()
+			//difference()
 			{
-			cylinder(sprocketThickness,toothWidth/2-tolerence,toothWidth/2-tolerence,true);
-			translate([toothWidth/2+padThickness,0,0])
-			cube([toothWidth,toothWidth,toothWidth],true);
+				cube([padThickness,toothWidth-tolerence,sprocketThickness],true);
+				translate([padThickness/2,0,0])
+				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
+			//cylinder(sprocketThickness,toothWidth/2-tolerence,toothWidth/2-tolerence,true);
+			//translate([toothWidth/2+padThickness,0,0])
+			//cube([toothWidth,toothWidth,toothWidth],true);
 			}
 			
 		}
@@ -667,5 +678,5 @@ echo("making pitch equal to: ",(2*3.14*pitchRadius)/teeth);
 
 }//end tankSprocket
 
-
+echo("pi is: ",PI);
 
