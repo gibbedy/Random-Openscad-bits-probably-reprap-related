@@ -644,9 +644,9 @@ module tankSprocket()
 //	pitchRadius=pitch/sin(toothAngle);
 	circumference=teeth*pitch;
 	pitchRadius=circumference/(2*PI);
-echo("sprocket Radius is: ",pitchRadius);
-echo("making circumference: ",2*PI*pitchRadius);
-echo("making pitch equal to: ",(2*PI*pitchRadius)/teeth);
+	echo("sprocket Radius is: ",pitchRadius);
+	echo("making circumference: ",2*PI*pitchRadius);
+	echo("making pitch equal to: ",(2*PI*pitchRadius)/teeth);
 	difference()
 	{
 		cylinder(sprocketThickness,pitchRadius,pitchRadius,true);
@@ -661,18 +661,30 @@ echo("making pitch equal to: ",(2*PI*pitchRadius)/teeth);
    	rotate( i * toothAngle,[0, 0, 1])
 		translate([pitchRadius,0,0])
 		{
-			//flatten top if tooth profile is going to extend past track
-			//difference()
-			{
-				cube([padThickness,toothWidth-tolerence,sprocketThickness],true);
-				translate([padThickness/2,0,0])
+			difference()
+			{	
+				union()
+				{
+				
+					//base of tooth
+					cube([padThickness,toothWidth-tolerence,sprocketThickness],true);
+					//round end of tooth
+					translate([padThickness/2,0,0])
+					cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
+				}
+				//cutout to make a bit pointy
+				translate([padThickness/2+(toothWidth-tolerence)/2,toothWidth/1.5,0])
 				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
-			//cylinder(sprocketThickness,toothWidth/2-tolerence,toothWidth/2-tolerence,true);
-			//translate([toothWidth/2+padThickness,0,0])
-			//cube([toothWidth,toothWidth,toothWidth],true);
+
+				//cutout to make a bit pointy
+				translate([padThickness/2+(toothWidth-tolerence)/2,-toothWidth/1.5,0])
+				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
 			}
-			
 		}
+
+	
+			
+		
 	}
 
 
