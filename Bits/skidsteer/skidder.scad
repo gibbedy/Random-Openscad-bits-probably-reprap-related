@@ -1,7 +1,7 @@
 use <..\Bearing.scad>;
 use <..\Bolt.scad>;
 
-$fn=50;
+$fn=100;
 //layer height used
 layerHeight=.3;
 //module Bolt(diameter,length,head_size,head_depth)
@@ -538,8 +538,8 @@ motor();
 //tankTrack();
 
 //translate([pitch/2,pitch*2,0])
-tankSprocket();
-
+//tankSprocket();
+newTestSprocket();
 
 
 
@@ -650,9 +650,11 @@ module tankSprocket()
 	difference()
 	{
 		cylinder(sprocketThickness,pitchRadius,pitchRadius,true);
-		cylinder(sprocketThickness,15,15,true);	
-		translate([0,0,wallThickness/2])
-		cylinder(sprocketThickness,pitchRadius-wallThickness,pitchRadius-wallThickness,true);
+		cylinder(sprocketThickness,15,15,true);
+		
+		//cutout to reduce plastic	
+		translate([0,0,wallThickness/4])
+		cylinder(sprocketThickness,pitchRadius-wallThickness/2,pitchRadius-wallThickness/2,true);
 	}
 
 //sprocketTeeth
@@ -667,17 +669,17 @@ module tankSprocket()
 				{
 				
 					//base of tooth
-					cube([padThickness,toothWidth-tolerence,sprocketThickness],true);
+					cube([padThickness/4,toothWidth-tolerence,sprocketThickness],true);
 					//round end of tooth
-					translate([padThickness/2,0,0])
+					translate([padThickness/8,0,0])
 					cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
 				}
 				//cutout to make a bit pointy
-				translate([padThickness/2+(toothWidth-tolerence)/2,toothWidth/1.5,0])
+				translate([padThickness/8+(toothWidth-tolerence)/2,toothWidth/1.5,0])
 				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
 
 				//cutout to make a bit pointy
-				translate([padThickness/2+(toothWidth-tolerence)/2,-toothWidth/1.5,0])
+				translate([padThickness/8+(toothWidth-tolerence)/2,-toothWidth/1.5,0])
 				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
 			}
 		}
@@ -687,8 +689,66 @@ module tankSprocket()
 		
 	}
 
-
 }//end tankSprocket
+
+
+//test sprocket to see if my 8 tooth case maths is correct. 
+//may parameterise in future if I can work it out
+module newTestSprocket()
+{
+
+
+	toothAngle=360/8;
+//	pitchRadius=pitch/sin(toothAngle);
+	pitchRadius=pitch;
+	echo("sprocket Radius is: ",pitchRadius);
+	echo("making circumference: ",2*PI*pitchRadius);
+	echo("making pitch equal to: ",(2*PI*pitchRadius)/teeth);
+	difference()
+	{
+		cylinder(sprocketThickness,pitchRadius,pitchRadius,true);
+		cylinder(sprocketThickness,15,15,true);
+		
+		//cutout to reduce plastic	
+		translate([0,0,wallThickness/4])
+		cylinder(sprocketThickness,pitchRadius-wallThickness/2,pitchRadius-wallThickness/2,true);
+	}
+
+//sprocketTeeth
+	for ( i = [0 : 8] )
+	{
+   	rotate( i * toothAngle,[0, 0, 1])
+		translate([pitchRadius,0,0])
+		{
+			difference()
+			{	
+				union()
+				{
+				
+					//base of tooth
+					cube([padThickness/4,toothWidth-tolerence,sprocketThickness],true);
+					//round end of tooth
+					translate([padThickness/8,0,0])
+					cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
+				}
+				//cutout to make a bit pointy
+				translate([padThickness/8+(toothWidth-tolerence)/2,toothWidth/1.5,0])
+				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
+
+				//cutout to make a bit pointy
+				translate([padThickness/8+(toothWidth-tolerence)/2,-toothWidth/1.5,0])
+				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
+			}
+		}
+
+	
+			
+		
+	}
+
+}
+
+
 
 echo("pi is: ",PI);
 
