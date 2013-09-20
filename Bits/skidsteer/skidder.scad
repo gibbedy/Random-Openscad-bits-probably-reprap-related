@@ -1,7 +1,11 @@
 use <..\Bearing.scad>;
 use <..\Bolt.scad>;
+//Simple skid steer rc tank
+//$fn=100;
 
-$fn=100;
+//pulley dimenstions
+bigPulleyDiameter=74.3;
+littlePulleyDiameter=42;
 //layer height used
 layerHeight=.3;
 //module Bolt(diameter,length,head_size,head_depth)
@@ -20,7 +24,7 @@ layerHeight=.3;
 
 
 
-//Simple skid steer rc tank
+
 
 	//length of cylinder to be used as cutout for other bits
 	holeExtension=5;
@@ -39,8 +43,10 @@ wallThickness=5;
 	width=wallThickness;
 	vehicleLength=150;
 	vehicleHeight=55;
-	topFrontWheel=[vehicleLength/2,0,0];
-	topBackWheel=[-vehicleLength/2,0,0];
+	//amount wheels are offset by because of different size to keep tank horizontal
+	wheelOffset=(bigPulleyDiameter-littlePulleyDiameter)/2;
+	topFrontWheel=[vehicleLength/2,0,-vehicleHeight/2+wallThickness+min(wheelOffset/2,vehicleHeight/2-wallThickness)];
+	topBackWheel=[-vehicleLength/2,0,-vehicleHeight/2+wallThickness];
 
 	boltHeadDepth=width-boltLength+boltOffset;
 
@@ -464,43 +470,43 @@ module littleGear()
 }
 
 
-/*
+
 //put it together for viewing
 //front Right big gear
 translate([0,(-vehicleLength/2),0])
 translate(topFrontWheel)
 rotate([90,0,0])
-bigGear();
+bigPulley();
 
 //back right big gear
 translate([0,(-vehicleLength/2),0])
 translate(topBackWheel)
 rotate([90,0,0])
-bigGear();
+littlePulley();
 
 //front Left big gear
 translate([0,(vehicleLength/2),0])
 translate(topFrontWheel)
 rotate([-90,0,0])
-bigGear();
+bigPulley();
 
 //back left big gear
 translate([0,(vehicleLength/2),0])
 translate(topBackWheel)
 rotate([-90,0,0])
-bigGear();
+littlePulley();
 
 
 //Right little drive gear
-translate([0,(-vehicleLength/2),0])
-rotate([90,0,0])
-littleGear();
+//translate([0,(-vehicleLength/2),0])
+//rotate([90,0,0])
+//littleGear();
 
 
 //left little drive gear
-translate([0,(vehicleLength/2),0])
-rotate([-90,0,0])
-littleGear();
+//translate([0,(vehicleLength/2),0])
+//rotate([-90,0,0])
+//littleGear();
 
 //Right side 
 translate([0,-(vehicleLength/2-width/2),0])
@@ -526,7 +532,7 @@ motor();
 translate([0,(vehicleLength/2-motorLength/2-width),0])
 rotate([-90,0,0])
 motor();
-*/
+
 
 //chassisBase();
 //bigGear();
@@ -843,8 +849,8 @@ module littlePulley()
 	}
 }
 
-bigPulley();
-translate([150,0,0])
-littlePulley();
+//bigPulley();
+//translate([150,0,0])
+//littlePulley();
 echo("pi is: ",PI);
 
