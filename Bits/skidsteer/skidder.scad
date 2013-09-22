@@ -3,31 +3,39 @@ use <..\Bolt.scad>;
 //Simple skid steer rc tank
 //$fn=100;
 
-//pulley dimenstions
-bigPulleyDiameter=74.3;
-littlePulleyDiameter=42;
+//width of side
+strength=10;
+
+//pulley and gear dimenstions
+bigPulleyDiameter=71.1486;
+littlePulleyDiameter=50.1274;
+
+//set to that of pitch Diameter of gear created in dxf file
+pinionGearDiameter=40;
+//gear must be created with this diameter in dxf
+wheelGearDiameter=40 ;
+
+pinionGearDXF="40mmGear.dxf";
+wheelGearDXF="40mmGear.dxf";
+littlePulleyDXF="50-1274mmPulley.dxf";
+bigPulleyDXF="71-1486mmPulley.dxf";
+
+
 //layer height used
 layerHeight=.3;
 //module Bolt(diameter,length,head_size,head_depth)
 
-	//dimensions for bolt to hold wheels on
-	boltLength=55;
-	boltDiameter=8.5;
-	boltHeadSize=13.25;
+//dimensions for bolt to hold wheels on
+boltLength=55;
+boltDiameter=8.5;
+boltHeadSize=13.25;
 	
 
-	//set for amount required to hold wheel on.. may parameterise this
-	boltOffset=20;
+//set for amount required to hold wheel on.. may parameterise this
+boltOffset=20;
 
-
-
-
-
-
-
-
-	//length of cylinder to be used as cutout for other bits
-	holeExtension=5;
+//length of cylinder to be used as cutout for other bits
+holeExtension=5;
 
 //Motor dimensions
 motorLength=68.3;
@@ -37,18 +45,27 @@ motorShaftDiameter=5.5;
 
 
 wallThickness=5;
-
+rideHeight=5;
 //chassis wheel points
-   //width=motorLength+holeExtension-.0001;
-	width=wallThickness;
-	vehicleLength=150;
-	vehicleHeight=55;
-	//amount wheels are offset by because of different size to keep tank horizontal
-	wheelOffset=(bigPulleyDiameter-littlePulleyDiameter)/2;
-	topFrontWheel=[vehicleLength/2,0,-vehicleHeight/2+wallThickness+min(wheelOffset/2,vehicleHeight/2-wallThickness)];
-	topBackWheel=[-vehicleLength/2,0,-vehicleHeight/2+wallThickness];
+//width=motorLength+holeExtension-.0001;
+width=wallThickness;
+vehicleLength=150;
+vehicleHeight=55;
+//amount wheels are offset by because of different size to keep tank horizontal
+wheelOffset=(bigPulleyDiameter-littlePulleyDiameter)/2;
+//center distance between pinion gear and little wheel gear
+pinionOffset=pinionGearDiameter/2+wheelGearDiameter/2;
 
-	boltHeadDepth=width-boltLength+boltOffset;
+//Location of gears/pulleys/motor/shafts
+
+//little wheel
+topBackWheel=[vehicleLength/2,0,-vehicleHeight/2+littlePulleyDiameter/2-rideHeight];
+//big wheel
+topFrontWheel=[-vehicleLength/2,0,-vehicleHeight/2+littlePulleyDiameter/2-rideHeight+wheelOffset];
+pinionGear=[topBackWheel[0]-sqrt(abs(pow(pinionOffset,2)-pow(topBackWheel[2],2))),0,0];
+
+
+boltHeadDepth=width-boltLength+boltOffset;
 
 
 function pointPlusWidth(vec3,width)=[vec3[0],width,vec3[2]];
@@ -235,44 +252,56 @@ module axles()
 	difference()
 	{
 		difference()
-		{//chassis made from a couple of cylinders minus a couple of cubes
+		{
 			union()
 			{
-				intersection()
-				{
-					cube([vehicleLength*2,width,vehicleHeight],true);
-					union()
-					{
-						translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
-						rotate([-90,0,0])
-						cylinder(width,vehicleLength/3,vehicleLength/3,true);
 
-						translate([topBackWheel[0]/2,topBackWheel[1],topBackWheel[2]])
-						rotate([-90,0,0])	
-						cylinder(width,vehicleLength/3,vehicleLength/3,true);
+			rotate([90,0,0])
+			translate([0,0,-wallThickness/2])
+			linear_extrude(height=wallThickness)
+			{
 
-					}
-				}
-			//support to keep axle square LHS
-			translate([topBackWheel[0],topBackWheel[1]-width/2,topBackWheel[2]])
-			rotate([-90,0,0])
-			cylinder(width*3,boltDiameter,boltDiameter);
 
-			//support to keep axle square RHS
-			translate([topFrontWheel[0],topFrontWheel[1]-width/2,topFrontWheel[2]])
-			rotate([-90,0,0])
-			cylinder(width*3,boltDiameter,boltDiameter);
+				polygon([[topFrontWheel[0],topFrontWheel[2]+strength],[pinionGear[0],pinionGear[2]+strength],
+						[topBackWheel[0],topBackWheel[2]+strength],[topBackWheel[0],topBackWheel[2]-strength],
+						[pinionGear[0],pinionGear[2]-strength],[topFrontWheel[0],topFrontWheel[2]-strength]]);
+
+				translate([topFrontWheel[0],topFrontWheel[2]])
+				circle(strength);
+
+				translate([pinionGear[0],pinionGear[2]])
+				circle(strength);
+	
+				translate([topBackWheel[0],topBackWheel[2]])
+				circle(strength);
+			}
+
+
+
+
+
+
+
+				//support to keep axle square LHS
+				translate([topBackWheel[0],topBackWheel[1]-width/2,topBackWheel[2]])
+				rotate([-90,0,0])
+				cylinder(width*3,strength,strength);
+
+				//support to keep axle square RHS
+				translate([topFrontWheel[0],topFrontWheel[1]-width/2-wallThickness,topFrontWheel[2]])
+				rotate([-90,0,0])
+				cylinder(width*4,strength,strength);
 			}
 
 			//cutout for motor holder
-			translate([0,holeExtension/2,0])
+			translate([pinionGear[0],holeExtension/2,pinionGear[2]])
 			rotate([-90,0,180])
 			motorHolder(true);
 			
 
 
 			//cutout to save on plastic
-			translate([topFrontWheel[0]/2,topFrontWheel[1],topFrontWheel[2]])
+			translate([topFrontWheel[0]/2,topFrontWheel[1],0])
 			rotate([-90,0,0])
 			cylinder(width,
 			min(vehicleHeight/2-wallThickness,(
@@ -282,7 +311,7 @@ module axles()
 
 
 			//cutout to save on plastic
-			translate([topBackWheel[0]/2,topBackWheel[1],topBackWheel[2]])
+			translate([topBackWheel[0]/2,topBackWheel[1],0])
 			rotate([-90,0,0])
 			cylinder(width,
 			min(vehicleHeight/2-wallThickness,(
@@ -307,39 +336,11 @@ module axles()
 
 
 
-	translate([0,(motorLength+holeExtension-width)/2+holeExtension/2,0])
+	translate([pinionGear[0],(motorLength+holeExtension-width)/2+holeExtension/2,pinionGear[2]])
 	rotate([-90,0,180])
 	motorHolder();
 }
 
-//motor spacing off center
-//difference()
-
-//translate([0,-motorLength*1.5-wallThickness,0])
-//chassis();
-
-//translate([0,-motorLength,0])
-//rotate([-90,0,180])
-//{
-//motorHolder(true);
-//}
-//}
-
-//difference()
-//{
-
-//translate([0,-(motorLength/2+motorLength-width/2+wallThickness),0])
-//rotate([90,0,0])
-//axles();
-//motorHolder();
-//translate([0,-motorLength,0])
-//rotate([-90,0,180])
-//chassisMain();
-//motorHolder(true);
-//chassisBase();
-//chassisLid();
-
-//translate([0,-motorLength,0])
 
 module chassisBase()
 {
@@ -375,56 +376,10 @@ module chassisLid()
 	}
 
 }
-module bigGear()
-{
-		//number of holes to cutout to save printing time
-		numberOfHoles=6;
-
-	difference()
-	{
-		union()
-		{
-			translate([0,0,wallThickness/2])
-			linear_extrude(height=wallThickness,center=true,convexity=10)
-			import (file = "bigGear.dxf");
-
-			//bearing holder
-			cylinder(8,14,14);
-		}
-
-		//bearing cutout
-		translate([0,0,7/2+8-7])
-		bearingExternalGeom(22.5,7);
-	
-		//axle cutout
-		cylinder(8,(22.5-2)/2,(22.5-2)/2);
 
 
 
-		for ( i = [0 : numberOfHoles] )
-		{
-   		rotate( i * 360 / numberOfHoles,[0, 0, 1])
-			translate([35,0,0])
-			cylinder(20,15,15,true);
-		}
-	}
-
-	//1.5mm washer for gear
-	difference()
-	{
-		union()
-		{
-			//top bit
-			cylinder(1.5,(boltDiameter+3)/2,(boltDiameter+3)/2);
-			//bottom bit
-			cylinder(1,(22.5-3)/2,(22.5-3)/2);
-		}
-		cylinder(1.5,boltDiameter/2,boltDiameter/2);
-	}
-}
-
-
-module littleGear()
+module pinionGear()
 {
 	difference()
 	{
@@ -433,8 +388,48 @@ module littleGear()
 			//import gear geometry from gearotic
 			translate([0,0,wallThickness/2])
 			linear_extrude(height=wallThickness,center=true,convexity=10)
-			import (file = "pinion-2D2.dxf");
+			import (file = pinionGearDXF);
 	
+			//cylinder for meat of gear	
+			cylinder(motorShaftLength-wallThickness,15/2,15/2);
+	
+			translate([0,8/2,(motorShaftLength-wallThickness)/2])
+			cube([15,8,motorShaftLength-wallThickness],true);
+		}
+
+		//shaft for cutout
+		difference()
+		{
+			//-wallThickness because of motor offset position
+			cylinder(motorShaftLength-wallThickness,motorShaftDiameter/2,motorShaftDiameter/2);
+			//sqare shaft
+			translate([0,motorShaftDiameter/2,motorShaftLength/2])
+			cube([motorShaftDiameter,1,motorShaftLength],true);
+		}
+	
+		//3mm nut cutout
+		translate([0,motorShaftDiameter/2+3/2-1,wallThickness+3])
+		{
+			//cube to make shaft to insert grub screw nut
+			translate([0,0,10/2])
+			cube([7,3,10],true);
+			//cylinder for meat of gear
+			rotate([90,0,0])
+			{
+				nut(6,3);
+			translate([0,0,-20/2])
+			cylinder(20,1.75,1.75,true);
+			}
+		}
+	}
+}
+
+module motorGear()
+{
+	difference()
+	{
+		union()
+		{
 			//cylinder for meat of gear	
 			cylinder(motorShaftLength-wallThickness,15/2,15/2);
 	
@@ -471,30 +466,168 @@ module littleGear()
 
 
 
+
+
+//creates a wheel with bearing hub using DXF file and specifying diameter. 
+//Diameter may or may not be used just to calculate position of cutouts
+module wheel(DXF,diameter,width,grubScrewShaft)
+{
+		//number of holes to cutout to save printing time
+		cutOutHoleDiameter=diameter/5;
+		numberOfHoles=6;
+
+	difference()
+	{
+		union()
+		{
+			//This is the DXF extruded to wallThickness
+			translate([0,0,width/2])
+			linear_extrude(height=width,center=true,convexity=10)
+			import (file = DXF);
+			
+			//block hole in dxf to allow custom shaft cutout
+			cylinder(wallThickness,diameter/4,diameter/4);
+			
+			//if grub screw shaft add grub screw support=
+			if(grubScrewShaft==true)
+			{			
+				cylinder(motorShaftLength-wallThickness,15/2,15/2);
+	
+				translate([0,8/2,(motorShaftLength-wallThickness)/2])
+				cube([15,8,motorShaftLength-wallThickness],true);	
+			}	
+
+
+
+
+
+		//if its a bearing hub  add geometery for bearing cutout
+		if(grubScrewShaft!=true)
+		{
+			//bearing holder
+			cylinder(8,14,14);
+		}
+		}
+
+
+		if(grubScrewShaft==true)
+		{
+		difference()
+		{
+			//-wallThickness because of motor offset position
+			cylinder(motorShaftLength-wallThickness,motorShaftDiameter/2,motorShaftDiameter/2);
+			//sqare shaft
+			translate([0,motorShaftDiameter/2,motorShaftLength/2])
+			cube([motorShaftDiameter,1,motorShaftLength],true);
+		}
+	
+		//3mm nut cutout
+		translate([0,motorShaftDiameter/2+3/2-1,wallThickness+3])
+		{
+			//cube to make shaft to insert grub screw nut
+			translate([0,0,10/2])
+			cube([7,3,10],true);
+			//cylinder for meat of gear
+			rotate([90,0,0])
+			{
+				nut(6,3);
+			translate([0,0,-20/2])
+			cylinder(20,1.75,1.75,true);
+			}
+		}
+		}
+		//if its a bearing hub  add geometery for bearing cutout
+		if(grubScrewShaft!=true)
+		{
+			//bearing cutout
+			translate([0,0,7/2+8-7])
+			bearingExternalGeom(22.5,7);
+	
+			//axle cutout
+			cylinder(8,(22.5-2)/2,(22.5-2)/2);
+		}
+
+
+
+
+		for ( i = [0 : numberOfHoles] )
+		{
+   		rotate( i * 360 / numberOfHoles,[0, 0, 1])
+			translate([cutOutHoleDiameter*1.5,0,0])
+			//holes to save on plastic
+			cylinder(30,cutOutHoleDiameter/2,cutOutHoleDiameter/2,true);
+		}
+	}
+
+}
+module washer()
+{
+	//1.5mm washer for gear
+	difference()
+	{
+		union()
+		{
+			//top bit
+			cylinder(1.5,(boltDiameter+3)/2,(boltDiameter+3)/2);
+			//bottom bit
+			cylinder(1,(22.5-3)/2,(22.5-3)/2);
+		}
+		cylinder(1.5,boltDiameter/2,boltDiameter/2);
+	}
+}
+
+//wheel(pinionGearDXF,pinionGearDiameter,true);
+//motorGear();
+//axles();
+/*
 //put it together for viewing
 //front Right big gear
-translate([0,(-vehicleLength/2),0])
+translate([0,(-vehicleLength/2)-(wallThickness),0])
 translate(topFrontWheel)
 rotate([90,0,0])
-bigPulley();
+wheel(bigPulleyDXF,bigPulleyDiameter,15);
 
 //back right big gear
 translate([0,(-vehicleLength/2),0])
 translate(topBackWheel)
 rotate([90,0,0])
-littlePulley();
+wheel(wheelGearDXF,wheelGearDiameter,wallThickness);
+
+//back right wheel pulley
+translate([0,(-vehicleLength/2)-(wallThickness),0])
+translate(topBackWheel)
+rotate([90,0,0])
+wheel(littlePulleyDXF,littlePulleyDiameter,15);
+
+//back left wheel pulley
+translate([0,(vehicleLength/2)+(wallThickness),0])
+translate(topBackWheel)
+rotate([-90,0,0])
+wheel(littlePulleyDXF,littlePulleyDiameter,15);
 
 //front Left big gear
-translate([0,(vehicleLength/2),0])
+translate([0,(vehicleLength/2)+(wallThickness),0])
 translate(topFrontWheel)
 rotate([-90,0,0])
-bigPulley();
+wheel(bigPulleyDXF,bigPulleyDiameter,15);
 
 //back left big gear
 translate([0,(vehicleLength/2),0])
 translate(topBackWheel)
 rotate([-90,0,0])
-littlePulley();
+wheel(wheelGearDXF,wheelGearDiameter,wallThickness);
+
+//back left pinion gear
+translate([0,(vehicleLength/2),0])
+translate(pinionGear)
+rotate([-90,0,0])
+wheel(pinionGearDXF,pinionGearDiameter,wallThickness,true);
+
+//back right pinion gear
+translate([0,-(vehicleLength/2),0])
+translate(pinionGear)
+rotate([90,0,0])
+wheel(pinionGearDXF,pinionGearDiameter,wallThickness,true);
 
 
 //Right little drive gear
@@ -510,12 +643,12 @@ littlePulley();
 
 //Right side 
 translate([0,-(vehicleLength/2-width/2),0])
-
+//rotate([0,0,180])
 axles();
 
 //Left side
 translate([0,(vehicleLength/2-width/2),0])
-rotate([0,0,180])
+rotate([180,0,0])
 axles();
 
 //lid
@@ -525,14 +658,16 @@ chassisLid();
 
 //motor RHS
 translate([0,-(vehicleLength/2-motorLength/2-width),0])
+translate(pinionGear)
 rotate([90,180,0])
 motor();
 
 //motor LHS
 translate([0,(vehicleLength/2-motorLength/2-width),0])
+translate(pinionGear)
 rotate([-90,0,0])
 motor();
-
+//*/
 
 //chassisBase();
 //bigGear();
@@ -540,317 +675,27 @@ motor();
 //axles();
 //motor();
 //motorHolder();
-//rotate([90,0,0])
-//tankTrack();
 
-//translate([pitch/2,pitch*2,0])
-//tankSprocket();
-//newTestSprocket();
-
-
-
-	//used to experiment to get max strength with minimal plastic
-	trackWallThickness=5;
-
-	//pla rivet
-	pinDiameter=3.5;
-
-	rollerDiameter=8;
-	rollerWidth=20;
-	pitch=20;
-	sprocketThickness=rollerWidth-1;
-	padWidth=rollerWidth+trackWallThickness*2;
-	//may experiment with changing padThickness later
-	padThickness=rollerDiameter;
-	
-	sprocketTeethHeight=rollerDiameter;
-	sprocketDiameter=vehicleHeight+10;
-	//number of sprocket teeth
-	teeth=10;
-	//tolerence for sprocket
-	tolerence=.3;
-	toothWidth=min(5,pitch-2*rollerDiameter);
-	echo("toothwidth:",toothWidth);
-
-module tankTrack()
-{
-
-	//create pad first with a few bits then cutout pin holes from result
-	difference()
-	{
-		union()
-		{
-			//first Roller
-			cylinder(rollerWidth,rollerDiameter/2,rollerDiameter/2,true);
-
-			//second roller (part of next link) not sure what i'm doing yet
-			translate([pitch,0,0])
-			difference()	
-			{
-				cylinder(padWidth,rollerDiameter/2,rollerDiameter/2,true);
-				cylinder(rollerWidth+tolerence,rollerDiameter/2,rollerDiameter/2,true);
-			}
-	
-			//main part of pad
-			difference()
-			{
-				translate([pitch/2,0,0])
-				cube([pitch,padThickness,padWidth],true);
-	
-				//minus bit to allow links to flex
-				difference()
-				{
-					cube([rollerDiameter+tolerence,padThickness,padWidth],true);
-					cube([rollerDiameter+tolerence,padThickness,rollerWidth],true);
-				}
-				translate([pitch,0,0])
-				cube([rollerDiameter+tolerence,padThickness,rollerWidth+tolerence],true);	
-			}
-		}
-
-		//cutout for sprocket
-	
-		difference()
-		{
-			//cube centerd on pad to cut stuff away from
-			translate([pitch/2,0,0])
-			cube([pitch-2*rollerDiameter,padThickness,rollerWidth],true);
-
-			union()
-			{
-
-				//first Roller
-				cylinder(rollerWidth,pitch/2-toothWidth/2,pitch/2-toothWidth/2,true);
-
-				//second roller (part of next link) not sure what i'm doing yet
-				translate([pitch,0,0])
-				cylinder(rollerWidth,pitch/2-toothWidth/2,pitch/2-toothWidth/2,true);	
-
-			}
-		}
-			
-
-		
-
-		//pin holes to cut out
-		cylinder(rollerWidth,pinDiameter/2,pinDiameter/2,true);
-	
-		//second roller (part of next link) not sure what i'm doing yet
-		translate([pitch,0,0])
-		cylinder(padWidth,pinDiameter/2,pinDiameter/2,true);
-		}
-}//end module tankTrack
-
-module tankSprocket()
+axles();
+/*
+rotate([90,0,0])
+translate([0,0,-wallThickness/2])
+linear_extrude(height=wallThickness)
 {
 
 
+	polygon([[topFrontWheel[0],topFrontWheel[2]+strength],[pinionGear[0],pinionGear[2]+strength],
+			[topBackWheel[0],topBackWheel[2]+strength],[topBackWheel[0],topBackWheel[2]-strength],
+			[pinionGear[0],pinionGear[2]-strength],[topFrontWheel[0],topFrontWheel[2]-strength]]);
 
-	toothAngle=360/teeth;
-//	pitchRadius=pitch/sin(toothAngle);
-	circumference=teeth*pitch;
-	pitchRadius=circumference/(2*PI);
-	echo("sprocket Radius is: ",pitchRadius);
-	echo("making circumference: ",2*PI*pitchRadius);
-	echo("making pitch equal to: ",(2*PI*pitchRadius)/teeth);
-	difference()
-	{
-		cylinder(sprocketThickness,pitchRadius,pitchRadius,true);
-		cylinder(sprocketThickness,15,15,true);
-		
-		//cutout to reduce plastic	
-		translate([0,0,wallThickness/4])
-		cylinder(sprocketThickness,pitchRadius-wallThickness/2,pitchRadius-wallThickness/2,true);
-	}
+	translate([topFrontWheel[0],topFrontWheel[2]])
+	circle(strength);
 
-//sprocketTeeth
-	for ( i = [0 : teeth] )
-	{
-   	rotate( i * toothAngle,[0, 0, 1])
-		translate([pitchRadius,0,0])
-		{
-			difference()
-			{	
-				union()
-				{
-				
-					//base of tooth
-					cube([padThickness/4,toothWidth-tolerence,sprocketThickness],true);
-					//round end of tooth
-					translate([padThickness/8,0,0])
-					cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
-				}
-				//cutout to make a bit pointy
-				translate([padThickness/8+(toothWidth-tolerence)/2,toothWidth/1.5,0])
-				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
+	translate([pinionGear[0],pinionGear[2]])
+	circle(strength);
 
-				//cutout to make a bit pointy
-				translate([padThickness/8+(toothWidth-tolerence)/2,-toothWidth/1.5,0])
-				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
-			}
-		}
-
-	
-			
-		
-	}
-
-}//end tankSprocket
-
-
-//test sprocket to see if my 8 tooth case maths is correct. 
-//may parameterise in future if I can work it out
-module newTestSprocket()
-{
-
-
-	toothAngle=360/8;
-//	pitchRadius=pitch/sin(toothAngle);
-	pitchRadius=pitch;
-	echo("sprocket Radius is: ",pitchRadius);
-	echo("making circumference: ",2*PI*pitchRadius);
-	echo("making pitch equal to: ",(2*PI*pitchRadius)/teeth);
-	difference()
-	{
-		cylinder(sprocketThickness,pitchRadius,pitchRadius,true);
-		cylinder(sprocketThickness,15,15,true);
-		
-		//cutout to reduce plastic	
-		translate([0,0,wallThickness/4])
-		cylinder(sprocketThickness,pitchRadius-wallThickness/2,pitchRadius-wallThickness/2,true);
-	}
-
-//sprocketTeeth
-	for ( i = [0 : 8] )
-	{
-   	rotate( i * toothAngle,[0, 0, 1])
-		translate([pitchRadius,0,0])
-		{
-			difference()
-			{	
-				union()
-				{
-				
-					//base of tooth
-					cube([padThickness/4,toothWidth-tolerence,sprocketThickness],true);
-					//round end of tooth
-					translate([padThickness/8,0,0])
-					cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
-				}
-				//cutout to make a bit pointy
-				translate([padThickness/8+(toothWidth-tolerence)/2,toothWidth/1.5,0])
-				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
-
-				//cutout to make a bit pointy
-				translate([padThickness/8+(toothWidth-tolerence)/2,-toothWidth/1.5,0])
-				cylinder(sprocketThickness,(toothWidth-tolerence)/2,(toothWidth-tolerence)/2,true);
-			}
-		}
-
-	
-			
-		
-	}
-
+	translate([topBackWheel[0],topBackWheel[2]])
+	circle(strength);
 }
-
-module bigPulley()
-{
-		//number of holes to cutout to save printing time
-		numberOfHoles=6;
-
-	difference()
-	{
-		union()
-		{
-			translate([0,0,wallThickness/2])
-			linear_extrude(height=wallThickness,center=true,convexity=10)
-			import (file = "bigPulley.dxf");
-
-			//bearing holder
-			cylinder(8,14,14);
-		}
-
-		//bearing cutout
-		translate([0,0,7/2+8-7])
-		bearingExternalGeom(22.5,7);
-	
-		//axle cutout
-		cylinder(8,(22.5-2)/2,(22.5-2)/2);
-
-
-
-		for ( i = [0 : numberOfHoles] )
-		{
-   		rotate( i * 360 / numberOfHoles,[0, 0, 1])
-			translate([20,0,0])
-			//holes to save on plastic
-			cylinder(20,5,5,true);
-		}
-	}
-
-	//1.5mm washer for gear
-	difference()
-	{
-		union()
-		{
-			//top bit
-			cylinder(1.5,(boltDiameter+3)/2,(boltDiameter+3)/2);
-			//bottom bit
-			cylinder(1,(22.5-3)/2,(22.5-3)/2);
-		}
-		cylinder(1.5,boltDiameter/2,boltDiameter/2);
-	}
-}
-
-
-module littlePulley()
-{
-	difference()
-	{
-		union()
-		{
-			//import gear geometry from gearotic
-			translate([0,0,wallThickness/2])
-			linear_extrude(height=wallThickness,center=true,convexity=10)
-			import (file = "littlePulley.dxf");
-	
-			//cylinder for meat of gear	
-			cylinder(motorShaftLength-wallThickness,15/2,15/2);
-	
-			translate([0,8/2,(motorShaftLength-wallThickness)/2])
-			cube([15,8,motorShaftLength-wallThickness],true);
-		}
-
-		//shaft for cutout
-		difference()
-		{
-			//-wallThickness because of motor offset position
-			cylinder(motorShaftLength-wallThickness,motorShaftDiameter/2,motorShaftDiameter/2);
-			//sqare shaft
-			translate([0,motorShaftDiameter/2,motorShaftLength/2])
-			cube([motorShaftDiameter,1,motorShaftLength],true);
-		}
-	
-		//3mm nut cutout
-		translate([0,motorShaftDiameter/2+3/2-1,wallThickness+3])
-		{
-			//cube to make shaft to insert grub screw nut
-			translate([0,0,10/2])
-			cube([7,3,10],true);
-			//cylinder for meat of gear
-			rotate([90,0,0])
-			{
-				nut(6,3);
-			translate([0,0,-20/2])
-			cylinder(20,1.75,1.75,true);
-			}
-		}
-	}
-}
-
-//bigPulley();
-//translate([150,0,0])
-//littlePulley();
-echo("pi is: ",PI);
+*/
 
