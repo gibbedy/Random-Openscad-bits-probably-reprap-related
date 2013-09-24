@@ -351,12 +351,9 @@ module chassisBase()
 	{
 	
 		chassisMain();		
-		translate([topBackWheel[0],topBackWheel[1],topBackWheel[2]+vehicleHeight/2])
+		translate([topBackWheel[0],topBackWheel[1],vehicleHeight/2+boltDiameter*2+topBackWheel[2]])
 		{
-			rotate([90,0,0])
-			cylinder(vehicleLength*3/4,(vehicleHeight+boltDiameter*2)/2+4,(vehicleHeight+boltDiameter*2)/2+4,true);
-			//cube([vehicleLength/2,3/4*vehicleLength,vehicleHeight+boltDiameter*2],true);
-			cube([vehicleLength*3,3/4*vehicleLength,vehicleHeight-boltDiameter*2],true);
+			cube([vehicleLength*3,3/4*vehicleLength,vehicleHeight],true);
 		}
 		
 	}
@@ -519,22 +516,53 @@ module wheel(DXF,diameter,width,grubScrewShaft,rim)
 	}
 
 }
-module washer()
+module spacer(big)
 {
-	//1.5mm washer for gear
-	difference()
+	if(big==true)
 	{
-		union()
+		//big spacer
+		difference()
 		{
-			//top bit
-			cylinder(bearingLip+.5,(boltDiameter+3)/2,(boltDiameter+3)/2);
-			//bottom bit
-			cylinder(bearingLip,(22.5-3)/2,(22.5-3)/2);
+			union()
+			{
+				//top bit
+				translate([0,0,-wallThickness])
+				cylinder(wallThickness+bearingLip+.5,(boltDiameter+3)/2,(boltDiameter+3)/2);
+				//bottom bit
+				translate([0,0,-wallThickness])
+				cylinder(wallThickness+bearingLip,(22.5-3)/2,(22.5-3)/2);
+			}
+			translate([0,0,-wallThickness])
+			cylinder(wallThickness+bearingLip+.5,boltDiameter/2,boltDiameter/2);
+		}	
+	}
+	else	
+	{
+
+		//1.5mm washer for gear
+		difference()
+		{
+			union()
+			{
+				//top bit
+				cylinder(bearingLip+.5,(boltDiameter+3)/2,(boltDiameter+3)/2);
+				//bottom bit
+				cylinder(bearingLip,(22.5-3)/2,(22.5-3)/2);
+			}
+			cylinder(bearingLip+.5,boltDiameter/2,boltDiameter/2);
 		}
-		cylinder(bearingLip+.5,boltDiameter/2,boltDiameter/2);
 	}
 }
-//putItAllTogether();
+
+module body()
+{
+
+	
+}
+
+//axles();
+//body();
+putItAllTogether();
 //wheelGearAndPulley();
 //color("red")
 //washer();
@@ -545,60 +573,78 @@ module putItAllTogether()
 translate([0,(-vehicleLength/2)-(wallThickness),0])
 translate(topFrontWheel)
 rotate([90,0,0])
+{
 wheel(bigPulleyDXF,bigPulleyDiameter,15,false,true);
+spacer(true);
+}
+
+//back Left big pulley
+mirror([0,1,0])
+{
+translate([0,(-vehicleLength/2)-(wallThickness),0])
+translate(topFrontWheel)
+rotate([90,0,0])
+{
+wheel(bigPulleyDXF,bigPulleyDiameter,15,false,true);
+spacer(true);
+}
+}
 
 //front right wheel gear
 translate([0,(-vehicleLength/2),0])
 translate(topBackWheel)
 rotate([90,0,0])
+{
 wheelGearAndPulley();
-
-/*
-//back left wheel pulley
-translate([0,(vehicleLength/2)+(wallThickness),0])
+spacer();
+}
+//front Left wheel gear
+mirror([0,1,0])
+{
+translate([0,(-vehicleLength/2),0])
 translate(topBackWheel)
-rotate([-90,0,0])
-wheel(littlePulleyDXF,littlePulleyDiameter,15,false,true);
+rotate([90,0,0])
+{
+wheelGearAndPulley();
+spacer();
+}
+}
 
-//front Left big gear
-translate([0,(vehicleLength/2)+(wallThickness),0])
-translate(topFrontWheel)
-rotate([-90,0,0])
-wheel(bigPulleyDXF,bigPulleyDiameter,15,false,true);
 
-//back left big gear
-translate([0,(vehicleLength/2),0])
-translate(topBackWheel)
-rotate([-90,0,0])
-wheel(wheelGearDXF,wheelGearDiameter,wallThickness);
-
-//back left pinion gear
-translate([0,(vehicleLength/2),0])
-translate(pinionGear)
-rotate([-90,0,0])
-wheel(pinionGearDXF,pinionGearDiameter,wallThickness,true);
-*/
 //right pinion gear
 translate([0,-(vehicleLength/2),0])
 translate(pinionGear)
 rotate([90,0,0])
 wheel(pinionGearDXF,pinionGearDiameter,wallThickness,true);
+
+//left pinion gear
+mirror([0,1,0])
+{
+translate([0,-(vehicleLength/2),0])
+translate(pinionGear)
+rotate([90,0,0])
+wheel(pinionGearDXF,pinionGearDiameter,wallThickness,true);
+}
+
 /*
 */
 //Right side 
 translate([0,-(vehicleLength/2-width/2),0])
-//rotate([0,0,180])
-axles();
-/*
-//Left side
-translate([0,(vehicleLength/2-width/2),0])
-rotate([180,0,0])
 axles();
 
+//Left side 
+mirror([0,1,0])
+{
+translate([0,-(vehicleLength/2-width/2),0])
+axles();
+}
+
+
+
 //lid
-translate([-vehicleLength/2,0,vehicleLength/2])
-rotate([0,-90,0])
-chassisLid();
+//translate([-vehicleLength/2,0,vehicleLength/2])
+//rotate([0,-90,0])
+//chassisLid();
 
 //motor RHS
 translate([0,-(vehicleLength/2-motorLength/2-width),0])
@@ -607,20 +653,16 @@ rotate([90,180,0])
 motor();
 
 //motor LHS
-translate([0,(vehicleLength/2-motorLength/2-width),0])
-translate(pinionGear)
-rotate([-90,0,0])
-motor();
-//*/
+mirror([0,1,0])
+{
+	translate([0,-(vehicleLength/2-motorLength/2-width),0])
+	translate(pinionGear)
+	rotate([90,180,0])
+	motor();
 }
 
-//chassisBase();
-//bigGear();
-//rotate([90,0,0])
-//axles();
-//motor();
-//motorHolder();
+}
 
-//axles();
+chassisBase();
 
 
