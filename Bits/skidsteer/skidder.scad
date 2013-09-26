@@ -562,7 +562,7 @@ module body()
 
 //axles();
 //body();
-putItAllTogether();
+//5
 //wheelGearAndPulley();
 //color("red")
 //washer();
@@ -662,7 +662,72 @@ mirror([0,1,0])
 }
 
 }
+module chassisBase2()
+{	
 
-chassisBase();
+		
+	difference()
+	{
+		union()
+		{
+			//cube full height and length
+			cube([vehicleLength+strength*4,vehicleLength-width*2,vehicleHeight],true);
+		}
 
+		union()
+		{
+			//minus cube to hollow out
+			translate([0,0,wallThickness])
+			cube([vehicleLength+strength*4-width*2,vehicleLength-width*2-wallThickness*2,vehicleHeight],true); 
+			
+			//cutout for front wheel
+			translate(topFrontWheel)
+			rotate([90,0,0])		
+			cylinder(vehicleLength,strength+.5,strength+.5,true);
+
+			//cutout for back wheel
+			translate(topBackWheel)
+			rotate([90,0,0])		
+			cylinder(vehicleLength,strength+.5,strength+.5,true);
+
+			//rhs motor holder cutout
+			translate([pinionGear[0],vehicleLength/2,pinionGear[2]])
+			{
+				translate([0,0,(motorDiameter+wallThickness*2+1)/2])	
+				cube([motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1],true);
+				rotate([90,0,0])
+				cylinder(width*3+1,motorDiameter/2+wallThickness+.5,motorDiameter/2+wallThickness+.5);
+			}
+
+			//lhs motor holder cutout
+			translate([pinionGear[0],-vehicleLength/2,pinionGear[2]])
+			{
+				translate([0,0,(motorDiameter+wallThickness*2+1)/2])
+				cube([motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1],true);
+				rotate([-90,0,0])
+				cylinder(width*3+1,motorDiameter/2+wallThickness+.5,motorDiameter/2+wallThickness+.5);
+			}
+
+
+		}
+		
+
+	
+	}
+	
+	difference()
+	{
+	//cube for motor support to be added to base of shell
+	translate([pinionGear[0],0,-vehicleHeight/4])
+	cube([motorDiameter/2,vehicleLength-width*8,vehicleHeight/2],true);
+			
+	// motor  cutout
+	translate([pinionGear[0],vehicleLength/2,pinionGear[2]])
+	rotate([90,0,0])
+	color("red")
+	cylinder(vehicleLength,motorDiameter/2+.5,motorDiameter/2+.5);
+	}
+}
+chassisBase2();
+putItAllTogether();
 
