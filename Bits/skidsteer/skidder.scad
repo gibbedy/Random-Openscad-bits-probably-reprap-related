@@ -1,7 +1,7 @@
 use <..\Bearing.scad>;
 use <..\Bolt.scad>;
 //Simple skid steer rc tank
-//$fn=100;
+$fn=100;
 
 
 //thickness of plastic used to hold bearing onto gear/pulley.
@@ -693,8 +693,9 @@ module chassisBase2()
 			//rhs motor holder cutout
 			translate([pinionGear[0],vehicleLength/2,pinionGear[2]])
 			{
-				translate([0,0,(motorDiameter+wallThickness*2+1)/2])	
-				cube([motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1],true);
+				//cutout for where motor goes to make printing easier
+				//translate([0,0,(motorDiameter+wallThickness*2+1)/2])	
+				//cube([motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1],true);
 				rotate([90,0,0])
 				cylinder(width*3+1,motorDiameter/2+wallThickness+.5,motorDiameter/2+wallThickness+.5);
 			}
@@ -702,8 +703,9 @@ module chassisBase2()
 			//lhs motor holder cutout
 			translate([pinionGear[0],-vehicleLength/2,pinionGear[2]])
 			{
-				translate([0,0,(motorDiameter+wallThickness*2+1)/2])
-				cube([motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1],true);
+				//cutout for where motor goes to make printing easier
+				//translate([0,0,(motorDiameter+wallThickness*2+1)/2])
+				//cube([motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1,motorDiameter+wallThickness*2+1],true);
 				rotate([-90,0,0])
 				cylinder(width*3+1,motorDiameter/2+wallThickness+.5,motorDiameter/2+wallThickness+.5);
 			}
@@ -728,6 +730,31 @@ module chassisBase2()
 	cylinder(vehicleLength,motorDiameter/2+.5,motorDiameter/2+.5);
 	}
 }
-chassisBase2();
-putItAllTogether();
+//chassisBase2();
+//putItAllTogether();
+//wheelSpacer();
+module wheelSpacer(tightFit)
+{
+	difference()
+	{
+		//cylinder to take stuff away from
+		cylinder(wallThickness*2,strength+wallThickness,strength+wallThickness,true);
+		translate([0,0,wallThickness])
+		//cutout for axle
+		cylinder(wallThickness*2,strength+.5,strength+.5,true);
+		//bolt hole
+		cylinder(wallThickness*3,boltDiameter/2+.5,boltDiameter/2+.5,true);
+		if(tightFit)
+		{
+			translate([strength+wallThickness,0,0])
+			cube([wallThickness,strength*2+2*wallThickness,wallThickness*2],true);
+		}
+	}
+}
 
+module battery()
+{
+	translate([-100,0,50])
+	cube([50,148,15],true);
+}
+spacer();
