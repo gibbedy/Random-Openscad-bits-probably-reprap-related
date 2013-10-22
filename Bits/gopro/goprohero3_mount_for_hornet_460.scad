@@ -90,11 +90,11 @@ module mountingBracket()
 		//minus mounting screws
 		translate([0,0,-(bracketLength-hingeDiameter/2+bracketHoleSpacing/2)])
 		rotate([90,0,0])
-		cylinder(hingeDiameter,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
+		cylinder(hingeDiameter+tolerance,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
 
 		translate([0,0,-(bracketLength-hingeDiameter/2-bracketHoleSpacing/2)])
 		rotate([90,0,0])
-		cylinder(hingeDiameter,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
+		cylinder(hingeDiameter+tolerance,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
 
 	}	
 
@@ -132,7 +132,7 @@ module mountingBracket()
 		//minus screw hole
 		translate([0,0,hingeDiameter/2])
 		rotate([0,90,0])
-		cylinder(hingeThickness*4+hingeGap,hingeBoltDiameter/2,hingeBoltDiameter/2,true);
+		cylinder(hingeThickness*4+hingeGap+tolerance,hingeBoltDiameter/2,hingeBoltDiameter/2,true);
 
 	}//difference
 }
@@ -330,5 +330,5 @@ module caseFront()
 }
 
 rotate([90,0,0])
-caseFront();
+mountingBracket();
 
