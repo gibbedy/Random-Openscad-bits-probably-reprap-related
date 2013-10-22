@@ -1,54 +1,70 @@
+//**********************************************************************************************
+//This is my attempt at a GoPro3 mount for my Quadcopter (Dualsky Hornet 460)
+//It has been designed to be printable without support and strong
+//By specifying the extrusion width you will be printing and setting perimeters to 3 (in slic3r)
+//printing will be pretty quick.
+//**********************************************************************************************
 
 $fn=50;
 
 //layer height used when printing
 layerHeight=.3;
+
+//extrusionwidth to use when printing
 extrusionWidth=.7;
-	//I have added 2mm to camera dimensions to allow for padding
-	//to be inserted
-	cameraLength=61;
-	cameraWidth=23;
-	cameraHeight=43;
 
-	cameraLenseHeight=8;
-	cameraLenseDiameter=25;
+//Camera Dimensions
+//I have added 2mm to camera dimensions to allow for padding
+//to be inserted
+cameraLength=61;
+cameraWidth=23;
+cameraHeight=43;
+cameraLenseHeight=8;
+cameraLenseDiameter=25;
 
-	baseSupportDiameter=10;
-	baseSupportHeight=10;
-	baseSupportScrewDiameter=4.5;
+//located 27.5mm from the bottom and 44.5mm from the left edge	 on my gopro3
+lenseXOffset=-(44.5-cameraLength/2);
+lenseZOffset=28-cameraHeight/2;
+
+//Base to be mounted on top plate of hornet 469. Not used but may need it in future on
+baseSupportDiameter=10;
+baseSupportHeight=10;
+baseSupportScrewDiameter=4.5;
 	
-	//located 27.5mm from the bottom and 44.5mm from the left edge	 on my gopro3
-	lenseXOffset=-(44.5-cameraLength/2);
-	lenseZOffset=28-cameraHeight/2;
+//Thickness of walls. Increase to make stronger
+wallThickness=4*extrusionWidth;
 
-
-	//Thickness of walls. Increase to make stronger
-	wallThickness=4*extrusionWidth;
-		hingeDiameter=15;
-	hingeThickness=3;
-	hingeGap=3.4;
-	hingeBoltDiameter=5.5;
-	hingeYOffset=(cameraWidth+2*wallThickness-hingeDiameter)/2;
+//Dimensions for GoPro hinge
+hingeDiameter=15;
+hingeThickness=3;
+hingeGap=3.4;
+hingeBoltDiameter=5.5;
+hingeYOffset=(cameraWidth+2*wallThickness-hingeDiameter)/2;
 	
-	//securing tab dimensions
-	tabDiameter=10;
-	tabScrewDiameter=3.5;	
-	RHStabOffset=10;
+//Back door securing tab dimensions
+tabDiameter=10;
+tabScrewDiameter=3.5;	
+RHStabOffset=10;
 
-	bracketLength=25;
-	bracketHoleSpacing=8.5;
-	bracketScrewDiameter=4.5;
+//Arm to attach gopro mount to hornet 460
+bracketLength=25;
+bracketHoleSpacing=8.5;
+bracketScrewDiameter=4.5;
+
+//Opening for USB plug (for FPV)
+usbPlugLength=wallThickness+.1;
+usbPlugWidth=15;
+usbPlugHeight=13;
+
+tolerance=.0001;
 
 //model of camera
 module hero3()
 {
-
-
 	//body of camera
 	cube([cameraLength,cameraWidth,cameraHeight],true);
 
 	//lense of camera
-	//*temp*located 27.5mm from the bottom and 44.5mm from the left edge	
 	translate([lenseXOffset,cameraWidth/2,lenseZOffset])
 	rotate([-90,0,0])
 	cylinder(cameraLenseHeight,cameraLenseDiameter/2,cameraLenseDiameter/2);
@@ -57,11 +73,7 @@ module hero3()
 //space needed for usb plug
 module usbPlugCutout()
 {
-	usbPlugLength=wallThickness+.1;
-	usbPlugWidth=17;
-	usbPlugHeight=13;
-
-//	rotate([180,0,0])s
+	//	rotate([180,0,0])s
 	//usb plug locate 5mm from front and 10mm from bottom
 	translate([-cameraLength/2-usbPlugLength/2,-(usbPlugWidth/2-cameraWidth/2+3),10-cameraHeight/2])
 	cube([usbPlugLength,usbPlugWidth,usbPlugHeight],true);
@@ -69,35 +81,23 @@ module usbPlugCutout()
 
 module mountingBracket()
 {
-
 	difference()
 	{
-	//main shaft	
-	translate([0,0,-(bracketLength-hingeDiameter/2+bracketHoleSpacing/2+5)/2])
-	cube([hingeThickness*4+hingeGap,hingeDiameter,bracketLength-hingeDiameter/2+bracketHoleSpacing/2+5],true);
+		//main shaft	
+		translate([0,0,-(bracketLength-hingeDiameter/2+bracketHoleSpacing/2+5)/2])
+		cube([hingeThickness*4+hingeGap,hingeDiameter,bracketLength-hingeDiameter/2+bracketHoleSpacing/2+5],true);
 	
-	//minus mounting screws
-	translate([0,0,-(bracketLength-hingeDiameter/2+bracketHoleSpacing/2)])
-rotate([90,0,0])
-cylinder(hingeDiameter,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
+		//minus mounting screws
+		translate([0,0,-(bracketLength-hingeDiameter/2+bracketHoleSpacing/2)])
+		rotate([90,0,0])
+		cylinder(hingeDiameter,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
 
-	translate([0,0,-(bracketLength-hingeDiameter/2-bracketHoleSpacing/2)])
-rotate([90,0,0])
-cylinder(hingeDiameter,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
+		translate([0,0,-(bracketLength-hingeDiameter/2-bracketHoleSpacing/2)])
+		rotate([90,0,0])
+		cylinder(hingeDiameter,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
 
-/*
-	//Although pretty I have taken away to get maximum strength.
-
-	//minus a bit to flatten end
-	translate([0,-hingeDiameter/4,(bracketHoleSpacing+2*5)/2-(bracketLength+bracketHoleSpacing/2+5-hingeDiameter/2)])
-	cube([hingeThickness*5,hingeDiameter/2,bracketHoleSpacing+2*5],true);
-
-	//minus cylinder to round off corner
-	translate([0,-hingeDiameter/2,-(bracketLength-bracketHoleSpacing/2-5-hingeDiameter/2)])
-	rotate([0,90,0])
-	#cylinder(5*hingeThickness+.001,hingeDiameter/2,hingeDiameter/2,true);
-*/
 	}	
+
 	difference()
 	{
 		union()
@@ -162,12 +162,11 @@ module hinge()
 				//hinge cylinder bottombit RHS
 				translate([-(hingeThickness/2+hingeGap/2),-hingeYOffset,hingeDiameter/4])
 				cube([hingeThickness,hingeDiameter,hingeDiameter/2],true);
-
-	
 			}
+
 		translate([0,-hingeYOffset,hingeDiameter/2])
 		rotate([0,90,0])
-		cylinder(hingeThickness*2+hingeGap,hingeBoltDiameter/2,hingeBoltDiameter/2,true);
+		cylinder(hingeThickness*2+hingeGap+tolerance,hingeBoltDiameter/2,hingeBoltDiameter/2,true);
 		}
 	}
 	
@@ -178,9 +177,8 @@ module case()
 	{
 		cube([cameraLength+wallThickness*2,cameraWidth+wallThickness*2,cameraHeight+wallThickness*2],true);
 		translate([0,-wallThickness,0])
-		//cutout to allow install of gopro3
-		//cube([cameraLength,cameraWidth,cameraHeight],true);
 
+	
 		usbPlugCutout();
 		hero3();
 
@@ -188,7 +186,7 @@ module case()
 		//added geom for lense hole to avoid support material
 	translate([lenseXOffset,cameraWidth/2,lenseZOffset])
 	rotate([-90,0,0])
-	#cylinder(layerHeight,cameraLenseDiameter/2,cameraLenseDiameter/2);
+	cylinder(layerHeight,cameraLenseDiameter/2,cameraLenseDiameter/2);
 
 	//LHS tab to attach back lid to
 	translate([(cameraLength/2+wallThickness+tabDiameter/2),-(cameraWidth/2),0])
@@ -198,14 +196,14 @@ module case()
 			union()
 			{
 				rotate([90,0,0])
-				#cylinder(wallThickness*2,tabDiameter/2,tabDiameter/2,true);
+				cylinder(wallThickness*2,tabDiameter/2,tabDiameter/2,true);
 				translate([-tabDiameter/4,0,0])
-				#cube([tabDiameter/2,wallThickness*2,tabDiameter],true);
+				cube([tabDiameter/2,wallThickness*2,tabDiameter],true);
 			}
 
 			//screw hole
 			rotate([90,0,0])
-			#cylinder(wallThickness*2,tabScrewDiameter/2,tabScrewDiameter/2,true);
+			cylinder(wallThickness*2+tolerance,tabScrewDiameter/2,tabScrewDiameter/2,true);
 		}
 	}
 
@@ -219,17 +217,17 @@ module case()
 			union()
 			{
 				rotate([90,0,0])
-				#cylinder(wallThickness*2,tabDiameter/2,tabDiameter/2,true);
+				cylinder(wallThickness*2,tabDiameter/2,tabDiameter/2,true);
 				translate([-tabDiameter/4,0,0])
-				#cube([tabDiameter/2,wallThickness*2,tabDiameter],true);
+				cube([tabDiameter/2,wallThickness*2,tabDiameter],true);
 			}
 
 			//screw hole
 			rotate([90,0,0])
-			#cylinder(wallThickness*2,tabScrewDiameter/2,tabScrewDiameter/2,true);
-		}
+			cylinder(wallThickness*2+tolerance,tabScrewDiameter/2,tabScrewDiameter/2,true);
 		}
 	}
+}
 	
 	//Bottom tab to attach back lid to
 	translate([0,-(cameraWidth/2),-(cameraHeight/2+wallThickness+tabDiameter/2)])
@@ -248,28 +246,14 @@ module case()
 
 			//screw hole
 			rotate([90,0,0])
-			#cylinder(wallThickness*2,tabScrewDiameter/2,tabScrewDiameter/2,true);
+			#cylinder(wallThickness*2+tolerance,tabScrewDiameter/2,tabScrewDiameter/2,true);
 		}
 		}
 	}
 
 }
 
-module tab()
-{
-		//triangle
-		difference()
-		{
-			
-			#cube([tabX,wallThickness,tabZ],true);
-			translate([0,-wallThickness/2,-tabZ/2])
-			rotate([-45,0,0])
-			#cube([tabX,wallThickness,tabZ],true);
-			
-		}
 
-
-}
 //base to mount to top plate of hornet 460
 module bracketBase()
 {
@@ -321,35 +305,30 @@ module mountingHolePairs()
 	}
 }
 
-//translate([(44.5-cameraLength/2),0,cameraHeight/2+wallThickness+baseSupportHeight])
-
-
-
-
-
-
-
-
-
-//bracketBase();
-//backCover();
-module backCover()
+module caseBackDoor()
 {
 	intersection()
 	{
 		case();
 		translate([0,-(cameraWidth/2+wallThickness/2),0])
-		cube([cameraLength+2*wallThickness+tabDiameter*2,wallThickness,cameraHeight+2*wallThickness+tabDiameter*2],true);
+		cube([cameraLength+2*wallThickness+tabDiameter*2+tolerance,wallThickness+tolerance,cameraHeight+2*wallThickness+tabDiameter*2+tolerance],true);
 	}
 }
 
-//case minus back cover
-//rotate([90,0,0])
+module caseFront()
+{
 	difference()
 	{
+		union()
+		{
 		case();
+		hinge();
+		}
 		translate([0,-(cameraWidth/2+wallThickness/2),0])
-		cube([cameraLength+2*wallThickness+tabDiameter*2,wallThickness,cameraHeight+2*wallThickness+tabDiameter*2],true);
+		cube([cameraLength+2*wallThickness+tabDiameter*2,wallThickness+.0001,cameraHeight+2*wallThickness+tabDiameter*2],true);
 	}
+}
 
+rotate([90,0,0])
+caseFront();
 
