@@ -4,10 +4,9 @@
 //By specifying the extrusion width you will be printing and setting perimeters to 3 (in slic3r)
 //printing will be pretty quick.
 //**********************************************************************************************
-<<<<<<< HEAD
-=======
+
 //mm
->>>>>>> mm
+
 
 $fn=50;
 
@@ -15,17 +14,15 @@ $fn=50;
 //layer height used when printing
 layerHeight=.3;
 
-<<<<<<< HEAD
-//extrusionwidth to use when printing
-extrusionWidth=.7;
-
-=======
-
 //extrusionwidth to use when printing
 extrusionWidth=.7;
 
 
->>>>>>> mm
+
+//extrusionwidth to use when printing
+extrusionWidth=.7;
+
+
 //Camera Dimensions
 //I have added 2mm to camera dimensions to allow for padding
 //to be inserted
@@ -35,42 +32,41 @@ cameraHeight=43;
 cameraLenseHeight=8;
 cameraLenseDiameter=25;
 
-<<<<<<< HEAD
+
 //located 27.5mm from the bottom and 44.5mm from the left edge	 on my gopro3
 lenseXOffset=-(44.5-cameraLength/2);
 lenseZOffset=28-cameraHeight/2;
 
-=======
+
 
 //located 27.5mm from the bottom and 44.5mm from the left edge         on my gopro3
 lenseXOffset=-(44.5-cameraLength/2);
 lenseZOffset=28-cameraHeight/2;
 
 
->>>>>>> mm
+
 //Base to be mounted on top plate of hornet 469. Not used but may need it in future on
 baseSupportDiameter=10;
 baseSupportHeight=10;
 baseSupportScrewDiameter=4.5;
-<<<<<<< HEAD
+
 	
 //Thickness of walls. Increase to make stronger
 wallThickness=4*extrusionWidth;
 
-=======
-        
+
 //Thickness of walls. Increase to make stronger
 wallThickness=4*extrusionWidth;
 
 
->>>>>>> mm
+
 //Dimensions for GoPro hinge
 hingeDiameter=15;
 hingeThickness=3;
 hingeGap=3.4;
 hingeBoltDiameter=5.5;
 hingeYOffset=(cameraWidth+2*wallThickness-hingeDiameter)/2;
-<<<<<<< HEAD
+
 	
 //Back door securing tab dimensions
 tabDiameter=10;
@@ -81,7 +77,7 @@ RHStabOffset=10;
 bracketLength=25;
 bracketHoleSpacing=8.5;
 bracketScrewDiameter=4.5;
-=======
+
         
 //Back door securing tab dimensions
 tabDiameter=10;
@@ -94,25 +90,21 @@ bracketLength=25+7.5+3;
 bracketHoleSpacing=8.5;
 bracketScrewDiameter=3.5;
 
->>>>>>> mm
 
 //Opening for USB plug (for FPV)
 usbPlugLength=wallThickness+.1;
 usbPlugWidth=15;
 usbPlugHeight=13;
 
-<<<<<<< HEAD
-tolerance=.0001;
-=======
 
 tolerance=.0001;
 
->>>>>>> mm
+
 
 //model of camera
 module hero3()
 {
-<<<<<<< HEAD
+
 	//body of camera
 	cube([cameraLength,cameraWidth,cameraHeight],true);
 
@@ -120,39 +112,39 @@ module hero3()
 	translate([lenseXOffset,cameraWidth/2,lenseZOffset])
 	rotate([-90,0,0])
 	cylinder(cameraLenseHeight,cameraLenseDiameter/2,cameraLenseDiameter/2);
-=======
-        //body of camera
-        cube([cameraLength,cameraWidth,cameraHeight],true);
+
+   //body of camera
+   cube([cameraLength,cameraWidth,cameraHeight],true);
 
 
-        //lense of camera
-        translate([lenseXOffset,cameraWidth/2,lenseZOffset])
-        rotate([-90,0,0])
-        cylinder(cameraLenseHeight,cameraLenseDiameter/2,cameraLenseDiameter/2);
->>>>>>> mm
+   //lense of camera
+   translate([lenseXOffset,cameraWidth/2,lenseZOffset])
+   rotate([-90,0,0])
+   cylinder(cameraLenseHeight,cameraLenseDiameter/2,cameraLenseDiameter/2);
+
 }
 
 
 //space needed for usb plug
 module usbPlugCutout()
 {
-<<<<<<< HEAD
+
 	//	rotate([180,0,0])s
 	//usb plug locate 5mm from front and 10mm from bottom
 	translate([-cameraLength/2-usbPlugLength/2,-(usbPlugWidth/2-cameraWidth/2+3),10-cameraHeight/2])
 	cube([usbPlugLength,usbPlugWidth,usbPlugHeight],true);
-=======
-        //        rotate([180,0,0])s
-        //usb plug locate 5mm from front and 10mm from bottom
-        translate([-cameraLength/2-usbPlugLength/2,-(usbPlugWidth/2-cameraWidth/2+3),10-cameraHeight/2])
-        cube([usbPlugLength,usbPlugWidth,usbPlugHeight],true);
->>>>>>> mm
+
+   //        rotate([180,0,0])s
+   //usb plug locate 5mm from front and 10mm from bottom
+   translate([-cameraLength/2-usbPlugLength/2,-(usbPlugWidth/2-cameraWidth/2+3),10-cameraHeight/2])
+   cube([usbPlugLength,usbPlugWidth,usbPlugHeight],true);
+
 }
 
 
 module mountingBracket()
 {
-<<<<<<< HEAD
+
 	difference()
 	{
 		//main shaft	
@@ -174,33 +166,34 @@ module mountingBracket()
 	{
 		union()
 		{
-				//hinge cylinder middle
-				translate([0,0,hingeDiameter/2])	
-				rotate([0,90,0])
-				cylinder(hingeGap,hingeDiameter/2,hingeDiameter/2,true);
+			//hinge cylinder middle
+			translate([0,0,hingeDiameter/2])	
+			rotate([0,90,0])
+			cylinder(hingeGap,hingeDiameter/2,hingeDiameter/2,true);
 
-				//hinge cylinder bottombit middle
-				translate([0,0,hingeDiameter/4])
-				cube([hingeGap,hingeDiameter,hingeDiameter/2],true);
+			//hinge cylinder bottombit middle
+			translate([0,0,hingeDiameter/4])
+			cube([hingeGap,hingeDiameter,hingeDiameter/2],true);
 
-				//hinge cylinder RHS
-				translate([-(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/2])	
-				rotate([0,90,0])
-				cylinder(hingeThickness,hingeDiameter/2,hingeDiameter/2,true);
+			//hinge cylinder RHS
+			translate([-(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/2])	
+			rotate([0,90,0])
+			cylinder(hingeThickness,hingeDiameter/2,hingeDiameter/2,true);
 
-				//hinge cylinder bottombit RHS
-				translate([-(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/4])
-				cube([hingeThickness,hingeDiameter,hingeDiameter/2],true);
+			//hinge cylinder bottombit RHS
+			translate([-(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/4])
+			cube([hingeThickness,hingeDiameter,hingeDiameter/2],true);
 
-				//hinge cylinder LHS
-				translate([(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/2])	
-				rotate([0,90,0])
-				cylinder(hingeThickness,hingeDiameter/2,hingeDiameter/2,true);
+			//hinge cylinder LHS
+			translate([(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/2])	
+			rotate([0,90,0])
+			cylinder(hingeThickness,hingeDiameter/2,hingeDiameter/2,true);
 
-				//hinge cylinder bottombit LHS
-				translate([(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/4])
-				cube([hingeThickness,hingeDiameter,hingeDiameter/2],true);
+			//hinge cylinder bottombit LHS
+			translate([(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/4])
+			cube([hingeThickness,hingeDiameter,hingeDiameter/2],true);
 		}
+
 		//minus screw hole
 		translate([0,0,hingeDiameter/2])
 		rotate([0,90,0])
@@ -255,7 +248,7 @@ module case()
 		hero3();
 
 	}
-		//added geom for lense hole to avoid support material
+	//added geom for lense hole to avoid support material
 	translate([lenseXOffset,cameraWidth/2,lenseZOffset])
 	rotate([-90,0,0])
 	cylinder(layerHeight,cameraLenseDiameter/2,cameraLenseDiameter/2);
@@ -284,49 +277,50 @@ module case()
 	{
 		rotate([0,180,0])
 		{
-		difference()
-		{
-			union()
+			difference()
 			{
-				rotate([90,0,0])
-				cylinder(wallThickness*2,tabDiameter/2,tabDiameter/2,true);
-				translate([-tabDiameter/4,0,0])
-				cube([tabDiameter/2,wallThickness*2,tabDiameter],true);
-			}
+				union()
+				{
+					rotate([90,0,0])
+					cylinder(wallThickness*2,tabDiameter/2,tabDiameter/2,true);
+					translate([-tabDiameter/4,0,0])
+					cube([tabDiameter/2,wallThickness*2,tabDiameter],true);
+				}
 
 			//screw hole
 			rotate([90,0,0])
 			cylinder(wallThickness*2+tolerance,tabScrewDiameter/2,tabScrewDiameter/2,true);
+			}
 		}
 	}
-}
 	
 	//Bottom tab to attach back lid to
 	translate([0,-(cameraWidth/2),-(cameraHeight/2+wallThickness+tabDiameter/2)])
 	{
 		rotate([0,90,0])
 		{
-		difference()
-		{
-			union()
+			difference()
 			{
-				rotate([90,0,0])
-				#cylinder(wallThickness*2,tabDiameter/2,tabDiameter/2,true);
-				translate([-tabDiameter/4,0,0])
-				#cube([tabDiameter/2,wallThickness*2,tabDiameter],true);
-			}
+				union()
+				{
+					rotate([90,0,0])
+					#cylinder(wallThickness*2,tabDiameter/2,tabDiameter/2,true);
+					translate([-tabDiameter/4,0,0])
+					#cube([tabDiameter/2,wallThickness*2,tabDiameter],true);
+				}
 
 			//screw hole
 			rotate([90,0,0])
 			#cylinder(wallThickness*2+tolerance,tabScrewDiameter/2,tabScrewDiameter/2,true);
-		}
+			}
 		}
 	}
 
 }
 
 
-=======
+module mountingBracket()
+{
 
 hingeOffset=(hingeDiameter-hingeDiameter*3/4)/2;
         difference()
@@ -525,7 +519,7 @@ module case()
 
 
 
->>>>>>> mm
+
 //base to mount to top plate of hornet 460
 module bracketBase()
 {
@@ -547,7 +541,7 @@ module bracketBase()
         translate([90/2,0,0])
         mountingHolePairs();
 
-<<<<<<< HEAD
+
 module caseBackDoor()
 {
 	intersection()
@@ -574,7 +568,7 @@ module caseFront()
 
 rotate([90,0,0])
 mountingBracket();
-=======
+
 
         rotate([0,0,270])
         translate([90/2,0,0])
@@ -637,7 +631,7 @@ module caseFront()
         }
 }
 
->>>>>>> mm
+
 
 rotate([-90,0,0])
 mountingBracket();
