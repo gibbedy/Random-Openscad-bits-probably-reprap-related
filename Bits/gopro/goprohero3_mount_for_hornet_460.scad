@@ -18,11 +18,6 @@ layerHeight=.3;
 extrusionWidth=.7;
 
 
-
-//extrusionwidth to use when printing
-extrusionWidth=.7;
-
-
 //Camera Dimensions
 //I have added 2mm to camera dimensions to allow for padding
 //to be inserted
@@ -38,13 +33,6 @@ lenseXOffset=-(44.5-cameraLength/2);
 lenseZOffset=28-cameraHeight/2;
 
 
-
-//located 27.5mm from the bottom and 44.5mm from the left edge         on my gopro3
-lenseXOffset=-(44.5-cameraLength/2);
-lenseZOffset=28-cameraHeight/2;
-
-
-
 //Base to be mounted on top plate of hornet 469. Not used but may need it in future on
 baseSupportDiameter=10;
 baseSupportHeight=10;
@@ -54,30 +42,12 @@ baseSupportScrewDiameter=4.5;
 //Thickness of walls. Increase to make stronger
 wallThickness=4*extrusionWidth;
 
-
-//Thickness of walls. Increase to make stronger
-wallThickness=4*extrusionWidth;
-
-
-
 //Dimensions for GoPro hinge
 hingeDiameter=15;
 hingeThickness=3;
 hingeGap=3.4;
 hingeBoltDiameter=5.5;
 hingeYOffset=(cameraWidth+2*wallThickness-hingeDiameter)/2;
-
-	
-//Back door securing tab dimensions
-tabDiameter=10;
-tabScrewDiameter=3.5;	
-RHStabOffset=10;
-
-//Arm to attach gopro mount to hornet 460
-bracketLength=25;
-bracketHoleSpacing=8.5;
-bracketScrewDiameter=4.5;
-
         
 //Back door securing tab dimensions
 tabDiameter=10;
@@ -90,16 +60,18 @@ bracketLength=25+7.5+3;
 bracketHoleSpacing=8.5;
 bracketScrewDiameter=3.5;
 
-
 //Opening for USB plug (for FPV)
 usbPlugLength=wallThickness+.1;
 usbPlugWidth=15;
 usbPlugHeight=13;
 
+//wifi button
+//10mm from back and 9.5mm from bottom left
+wifiButtonDiameter=5.5;
+wifiButtonYOffset=10;
+wifiButtonZOffset=9.5;
 
 tolerance=.0001;
-
-
 
 //model of camera
 module hero3()
@@ -131,76 +103,22 @@ module usbPlugCutout()
 
 	//	rotate([180,0,0])s
 	//usb plug locate 5mm from front and 10mm from bottom
-	translate([-cameraLength/2-usbPlugLength/2,-(usbPlugWidth/2-cameraWidth/2+3),10-cameraHeight/2])
+	translate([-cameraLength/2-usbPlugLength/2,-(usbPlugWidth/2-cameraWidth/2),12-cameraHeight/2])
 	cube([usbPlugLength,usbPlugWidth,usbPlugHeight],true);
 
-   //        rotate([180,0,0])s
-   //usb plug locate 5mm from front and 10mm from bottom
-   translate([-cameraLength/2-usbPlugLength/2,-(usbPlugWidth/2-cameraWidth/2+3),10-cameraHeight/2])
-   cube([usbPlugLength,usbPlugWidth,usbPlugHeight],true);
-
 }
 
-
-module mountingBracket()
+module wifiButtonCutout()
 {
 
-	difference()
-	{
-		//main shaft	
-		translate([0,0,-(bracketLength-hingeDiameter/2+bracketHoleSpacing/2+5)/2])
-		cube([hingeThickness*4+hingeGap,hingeDiameter,bracketLength-hingeDiameter/2+bracketHoleSpacing/2+5],true);
-	
-		//minus mounting screws
-		translate([0,0,-(bracketLength-hingeDiameter/2+bracketHoleSpacing/2)])
-		rotate([90,0,0])
-		cylinder(hingeDiameter+tolerance,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
 
-		translate([0,0,-(bracketLength-hingeDiameter/2-bracketHoleSpacing/2)])
-		rotate([90,0,0])
-		cylinder(hingeDiameter+tolerance,bracketScrewDiameter/2,bracketScrewDiameter/2,true);
+	translate([(cameraLength+wallThickness+tolerance)/2,-cameraWidth/2+wifiButtonYOffset,-cameraHeight/2+wifiButtonZOffset])
+	rotate([0,90,0])
+	#cylinder(wallThickness+tolerance+50,wifiButtonDiameter/2,wifiButtonDiameter/2,true);
 
-	}	
-
-	difference()
-	{
-		union()
-		{
-			//hinge cylinder middle
-			translate([0,0,hingeDiameter/2])	
-			rotate([0,90,0])
-			cylinder(hingeGap,hingeDiameter/2,hingeDiameter/2,true);
-
-			//hinge cylinder bottombit middle
-			translate([0,0,hingeDiameter/4])
-			cube([hingeGap,hingeDiameter,hingeDiameter/2],true);
-
-			//hinge cylinder RHS
-			translate([-(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/2])	
-			rotate([0,90,0])
-			cylinder(hingeThickness,hingeDiameter/2,hingeDiameter/2,true);
-
-			//hinge cylinder bottombit RHS
-			translate([-(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/4])
-			cube([hingeThickness,hingeDiameter,hingeDiameter/2],true);
-
-			//hinge cylinder LHS
-			translate([(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/2])	
-			rotate([0,90,0])
-			cylinder(hingeThickness,hingeDiameter/2,hingeDiameter/2,true);
-
-			//hinge cylinder bottombit LHS
-			translate([(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/4])
-			cube([hingeThickness,hingeDiameter,hingeDiameter/2],true);
-		}
-
-		//minus screw hole
-		translate([0,0,hingeDiameter/2])
-		rotate([0,90,0])
-		cylinder(hingeThickness*4+hingeGap+tolerance,hingeBoltDiameter/2,hingeBoltDiameter/2,true);
-
-	}//difference
 }
+
+
 module hinge()
 {
 	translate([(lenseXOffset),wallThickness,cameraHeight/2+wallThickness])
@@ -241,11 +159,12 @@ module case()
 	difference()
 	{
 		cube([cameraLength+wallThickness*2,cameraWidth+wallThickness*2,cameraHeight+wallThickness*2],true);
-		translate([0,-wallThickness,0])
+		//translate([0,-wallThickness,0])
 
 	
 		usbPlugCutout();
 		hero3();
+		wifiButtonCutout();
 
 	}
 	//added geom for lense hole to avoid support material
@@ -437,6 +356,7 @@ module case()
         
                 usbPlugCutout();
                 hero3();
+						wifiButtonCutout();
 
 
         }
@@ -606,32 +526,10 @@ module mountingHolePairs()
 }
 
 
-module caseBackDoor()
-{
-        intersection()
-        {
-                case();
-                translate([0,-(cameraWidth/2+wallThickness/2),0])
-                cube([cameraLength+2*wallThickness+tabDiameter*2+tolerance,wallThickness+tolerance,cameraHeight+2*wallThickness+tabDiameter*2+tolerance],true);
-        }
-}
-
-
-module caseFront()
-{
-        difference()
-        {
-                union()
-                {
-                case();
-                hinge();
-                }
-                translate([0,-(cameraWidth/2+wallThickness/2),0])
-                cube([cameraLength+2*wallThickness+tabDiameter*2,wallThickness+.0001,cameraHeight+2*wallThickness+tabDiameter*2],true);
-        }
-}
 
 
 
-rotate([-90,0,0])
-mountingBracket();
+//rotate([-90,0,0])
+//mountingBracket();
+case();
+//wifiButtonCutout();
