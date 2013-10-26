@@ -45,7 +45,7 @@ wallThickness=4*extrusionWidth;
 //Dimensions for GoPro hinge
 hingeDiameter=15;
 hingeThickness=3;
-hingeGap=3.4;
+hingeGap=3.3;
 hingeBoltDiameter=5.5;
 hingeYOffset=(cameraWidth+2*wallThickness-hingeDiameter)/2;
         
@@ -122,12 +122,12 @@ module wifiButtonCutout()
 module mountingBracket()
 {
 
-hingeOffset=(hingeDiameter-hingeDiameter*3/4)/2;
+hingeOffset=8;
         difference()
         {
                 //main shaft        
                 translate([0,hingeOffset/2,-(bracketLength-hingeDiameter/2+bracketHoleSpacing/2+5)/2])
-                cube([hingeThickness*4+hingeGap,hingeDiameter-hingeOffset,bracketLength-hingeDiameter/2+bracketHoleSpacing/2+5],true);
+                cube([hingeThickness*3+2*hingeGap,hingeDiameter-hingeOffset,bracketLength-hingeDiameter/2+bracketHoleSpacing/2+5],true);
         
                 //minus mounting screws
                 translate([0,0,-(bracketLength-hingeDiameter/2+bracketHoleSpacing/2)])
@@ -159,30 +159,30 @@ hingeOffset=(hingeDiameter-hingeDiameter*3/4)/2;
 
 
                                 //hinge cylinder RHS
-                                translate([-(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/2])        
+                                translate([-(hingeThickness+hingeGap),0,hingeDiameter/2])        
                                 rotate([0,90,0])
                                 cylinder(hingeThickness,hingeDiameter/2,hingeDiameter/2,true);
 
 
                                 //hinge cylinder bottombit RHS
-                                translate([-(hingeThickness*2+(hingeGap-hingeThickness)/2),hingeOffset/2,hingeDiameter/4])
+                                translate([-(hingeThickness+hingeGap),hingeOffset/2,hingeDiameter/4])
                                 cube([hingeThickness,hingeDiameter-hingeOffset,hingeDiameter/2],true);
 
 
                                 //hinge cylinder LHS
-                                translate([(hingeThickness*2+(hingeGap-hingeThickness)/2),0,hingeDiameter/2])        
+                                translate([(hingeThickness+hingeGap),0,hingeDiameter/2])        
                                 rotate([0,90,0])
                                 cylinder(hingeThickness,hingeDiameter/2,hingeDiameter/2,true);
 
 
                                 //hinge cylinder bottombit LHS
-                                translate([(hingeThickness*2+(hingeGap-hingeThickness)/2),hingeOffset/2,hingeDiameter/4])
+                                translate([(hingeThickness+hingeGap),hingeOffset/2,hingeDiameter/4])
                                 cube([hingeThickness,hingeDiameter-hingeOffset,hingeDiameter/2],true);
                 }
                 //minus screw hole
                 translate([0,0,hingeDiameter/2])
                 rotate([0,90,0])
-                cylinder(hingeThickness*4+hingeGap+tolerance,hingeBoltDiameter/2,hingeBoltDiameter/2,true);
+                cylinder(hingeThickness*3+2*hingeGap+tolerance,hingeBoltDiameter/2,hingeBoltDiameter/2,true);
 
 
         }//difference
@@ -413,8 +413,8 @@ module mountingHolePairs()
 
 
 
-//rotate([-90,0,0])
-//mountingBracket();
-case();
-hinge();
+rotate([0,90,0])
+mountingBracket();
+//case();
+//hinge();
 //wifiButtonCutout();
